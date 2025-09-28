@@ -51,14 +51,11 @@ class ImageGenerator {
   private cloudinaryFolder: string;
 
 
-  // Tier 1 Gemini 2.5 Flash Image Preview limits (configurable via .env)
   private readonly RATE_LIMITS = {
     requestsPerMinute: parseInt(process.env.GEMINI_REQUESTS_PER_MINUTE || '400'),
     requestsPerDay: parseInt(process.env.GEMINI_REQUESTS_PER_DAY || '500000'),
-    concurrentRequests: 2000,
     delayBetweenRequests: parseInt(process.env.GEMINI_DELAY_BETWEEN_REQUESTS || '150'),
-    imagesPerProduct: parseInt(process.env.GEMINI_IMAGES_PER_PRODUCT || '4'),
-    totalCallsPerProduct: parseInt(process.env.GEMINI_TOTAL_CALLS_PER_PRODUCT || '5') // 1 scene generation + 4 images
+    imagesPerProduct: parseInt(process.env.GEMINI_IMAGES_PER_PRODUCT || '4')
   };
 
   constructor() {
@@ -86,7 +83,6 @@ class ImageGenerator {
     });
 
     this.cloudinaryFolder = process.env.CLOUDINARY_FOLDER || 'product-images';
-    console.log(`☁️ Cloudinary configured for cloud: ${cloudName}, folder: ${this.cloudinaryFolder}`);
 
     // Create temp directory
     this.tempDir = path.join(__dirname, 'temp_images');
@@ -114,35 +110,7 @@ class ImageGenerator {
     return crypto.createHash('md5').update(url).digest('hex').substring(0, 8);
   }
 
-  private createAntiArtifactPrompt(): string {
-    return `
-CRITICAL ANTI-ARTIFACT REQUIREMENTS:
-- NO floating limbs, extra fingers, or anatomical distortions
-- NO warped faces, asymmetrical features, or unnatural expressions
-- NO fabric that defies physics or impossible draping
-- NO blurred text, distorted logos, or corrupted graphics
-- NO impossible lighting that creates unnatural shadows
-- NO background elements that blend unnaturally with subject
-- NO metallic surfaces that don't reflect properly
-- NO skin textures that appear plastic or artificial
-- NO hair that looks painted or lacks individual strands
-- NO clothing that appears painted on rather than worn
-- NO perspective distortions or impossible spatial relationships
-- NO color bleeding between separate elements
-- NO sharp edges where soft transitions should exist
-- NO repetitive patterns that break unnaturally
-- NO objects that appear to float without support
 
-PHOTOREALISTIC VALIDATION CHECKLIST:
-✓ All human anatomy appears natural and proportional
-✓ Fabric behaves according to physics and material properties
-✓ Lighting creates believable shadows and highlights
-✓ All surfaces have appropriate texture and material properties
-✓ Spatial relationships make logical sense
-✓ Colors are consistent with real-world lighting conditions
-✓ All elements appear to exist in the same physical space
-✓ No elements appear digitally composited or artificial`;
-  }
 
   private createFallbackPrompt(product: Product, imageType: string): string {
     const title = product.Title;
@@ -157,11 +125,10 @@ PHOTOREALISTIC VALIDATION CHECKLIST:
     }
   }
 
-  private enhancePromptWithTechnicalSpecs(basePrompt: string, imageType: 'garment' | 'photoshoot'): string {
-    // Simplified enhancement - just add anti-artifact requirements
+  private enhancePromptWithTechnicalSpecs(basePrompt: string): string {
     return `${basePrompt}
 
-Ensure photorealistic results with natural lighting, accurate colors, and professional quality. Avoid any artificial-looking elements, distortions, or unrealistic proportions. The image should look like it was captured by a professional photographer using high-end equipment.`;
+Professional photography quality with natural lighting, accurate colors, and realistic proportions.`;
   }
 
   private async checkRateLimit(): Promise<void> {
@@ -197,11 +164,8 @@ Ensure photorealistic results with natural lighting, accurate colors, and profes
   private async executeWithRateLimit<T>(operation: () => Promise<T>): Promise<T> {
     await this.checkRateLimit();
     
-    // Increment counters
     this.requestCount++;
     this.dailyRequestCount++;
-    
-    console.log(`📊 Rate limit status: ${this.requestCount}/${this.RATE_LIMITS.requestsPerMinute} per minute, ${this.dailyRequestCount}/${this.RATE_LIMITS.requestsPerDay} per day`);
     
     try {
       const result = await operation();
@@ -224,8 +188,6 @@ Ensure photorealistic results with natural lighting, accurate colors, and profes
     
     while (retryCount < maxRetries) {
       try {
-        console.log(`Downloading image: ${url}${retryCount > 0 ? ` (attempt ${retryCount + 1}/${maxRetries})` : ''}`);
-        
         const response = await axios({
           method: 'GET',
           url: url,
@@ -238,18 +200,11 @@ Ensure photorealistic results with natural lighting, accurate colors, and profes
 
         const filePath = path.join(targetDir, filename);
         const writer = fs.createWriteStream(filePath);
-        
         response.data.pipe(writer);
 
         return new Promise((resolve, reject) => {
-          writer.on('finish', () => {
-            console.log(`✅ Downloaded: ${filename} to ${targetDir}`);
-            resolve(filePath);
-          });
-          writer.on('error', (error) => {
-            console.error(`❌ Download error for ${filename}:`, error);
-            reject(error);
-          });
+          writer.on('finish', () => resolve(filePath));
+          writer.on('error', reject);
         });
       } catch (error: any) {
         retryCount++;
@@ -464,7 +419,7 @@ Using the provided reference image, ensure the garment maintains its exact color
 
           if (imageType.type === 'garment_long') {
             const basePrompt = this.createGarmentOnlyPrompt(product, false);
-            prompt = this.enhancePromptWithTechnicalSpecs(basePrompt, 'garment');
+            prompt = this.enhancePromptWithTechnicalSpecs(basePrompt);
             contentArray = [
               prompt,
               {
@@ -476,7 +431,7 @@ Using the provided reference image, ensure the garment maintains its exact color
             ];
           } else if (imageType.type === 'garment_close') {
             const basePrompt = this.createGarmentOnlyPrompt(product, true);
-            prompt = this.enhancePromptWithTechnicalSpecs(basePrompt, 'garment');
+            prompt = this.enhancePromptWithTechnicalSpecs(basePrompt);
             contentArray = [
               prompt,
               {
@@ -489,7 +444,7 @@ Using the provided reference image, ensure the garment maintains its exact color
           } else if (imageType.scene) {
             // Photoshoot images - use generated scene concept with original image as reference
             const basePrompt = this.createPhotoshootPrompt(product, imageType.scene);
-            prompt = this.enhancePromptWithTechnicalSpecs(basePrompt, 'photoshoot');
+            prompt = this.enhancePromptWithTechnicalSpecs(basePrompt);
             contentArray = [
               prompt,
               {
@@ -596,71 +551,33 @@ Using the provided reference image, ensure the garment maintains its exact color
   }
 
   private async uploadToCloudinary(imagePath: string, title: string, productHandle?: string): Promise<string | null> {
-    const maxRetries = 3;
-    let retryCount = 0;
-    
-    console.log(`☁️ Uploading to Cloudinary: ${path.basename(imagePath)}`);
-    
-    while (retryCount < maxRetries) {
-      try {
-        // Check if file exists
-        if (!fs.existsSync(imagePath)) {
-          console.error(`❌ File not found: ${imagePath}`);
-          return null;
-        }
+    try {
+      if (!fs.existsSync(imagePath)) return null;
 
-        // Create a clean public ID from the title and product handle
-        const sanitizedTitle = title.replace(/[^a-zA-Z0-9\-_]/g, '_').toLowerCase();
-        const timestamp = Date.now();
-        const publicId = productHandle 
-          ? `${productHandle}/${sanitizedTitle}_${timestamp}`
-          : `${sanitizedTitle}_${timestamp}`;
+      const sanitizedTitle = title.replace(/[^a-zA-Z0-9\-_]/g, '_').toLowerCase();
+      const timestamp = Date.now();
+      const publicId = productHandle 
+        ? `${productHandle}/${sanitizedTitle}_${timestamp}`
+        : `${sanitizedTitle}_${timestamp}`;
 
-        const uploadResult = await cloudinary.uploader.upload(imagePath, {
-          public_id: publicId,
-          folder: this.cloudinaryFolder,
-          resource_type: 'image',
-          quality: 'auto:good', // Automatic quality optimization
-          tags: ['product-image', 'generated', productHandle].filter(Boolean),
-          context: {
-            title: title,
-            product_handle: productHandle || '',
-            generated_at: new Date().toISOString()
-          }
-        });
+      const uploadResult = await cloudinary.uploader.upload(imagePath, {
+        public_id: publicId,
+        folder: this.cloudinaryFolder,
+        resource_type: 'image',
+        quality: 'auto:good',
+        tags: ['product-image', 'generated', productHandle].filter(Boolean),
+        context: {
+          title: title,
+          product_handle: productHandle || '',
+          generated_at: new Date().toISOString()
+        }
+      });
 
-        if (uploadResult && uploadResult.secure_url) {
-          console.log(`✅ Uploaded successfully: ${uploadResult.secure_url}`);
-          return uploadResult.secure_url;
-        } else {
-          console.error('Cloudinary upload failed: No secure URL returned');
-          return null;
-        }
-      } catch (error: any) {
-        retryCount++;
-        
-        // Log detailed error information
-        console.error(`❌ Cloudinary upload failed (attempt ${retryCount}/${maxRetries}):`, error.message);
-        
-        const isRetryableError = 
-          error.http_code >= 500 ||
-          error.message?.includes('timeout') ||
-          error.message?.includes('network') ||
-          error.message?.includes('ECONNRESET');
-        
-        if (retryCount < maxRetries && isRetryableError) {
-          const waitTime = Math.min(2000 * retryCount, 10000); // 2s, 4s, 6s
-          console.log(`⏳ Retrying upload in ${waitTime}ms... (attempt ${retryCount + 1}/${maxRetries})`);
-          await new Promise(resolve => setTimeout(resolve, waitTime));
-          continue;
-        }
-        
-        console.error(`❌ Cloudinary upload failed after ${maxRetries} attempts`);
-        return null;
-      }
+      return uploadResult?.secure_url || null;
+    } catch (error: any) {
+      console.error(`❌ Cloudinary upload failed:`, error.message);
+      return null;
     }
-    
-    return null;
   }
 
 
@@ -680,13 +597,7 @@ Using the provided reference image, ensure the garment maintains its exact color
     fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
   }
 
-  public getRateLimitStatus() {
-    return {
-      current: this.requestCount,
-      daily: this.dailyRequestCount,
-      limits: this.RATE_LIMITS
-    };
-  }
+
 
   async listProducts(csvPath: string = '/home/yavuz/Projects/shopify_automation/output/lmv_shopify_products.csv', limit: number = 10): Promise<void> {
     const products: Product[] = [];
