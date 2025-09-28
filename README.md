@@ -24,7 +24,7 @@ npm run generate-images # Generate AI images for products
 ## Features
 
 - **Simple Automation**: Turkish CSV → Shopify CSV with GPT-4 content enhancement
-- **Image Generator**: 4 AI-generated images per product using Gemini
+- **Image Generator**: 5 AI-generated images per product using Gemini
 - **Cloudinary Integration**: Automatic image optimization and CDN delivery
 - **LMV Brand Styling**: Avant-garde aesthetic with vintage/timeless appeal
 

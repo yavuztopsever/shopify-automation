@@ -55,7 +55,7 @@ class ImageGenerator {
     requestsPerMinute: parseInt(process.env.GEMINI_REQUESTS_PER_MINUTE || '400'),
     requestsPerDay: parseInt(process.env.GEMINI_REQUESTS_PER_DAY || '500000'),
     delayBetweenRequests: parseInt(process.env.GEMINI_DELAY_BETWEEN_REQUESTS || '150'),
-    imagesPerProduct: parseInt(process.env.GEMINI_IMAGES_PER_PRODUCT || '4')
+    imagesPerProduct: parseInt(process.env.GEMINI_IMAGES_PER_PRODUCT || '5')
   };
 
   constructor() {
@@ -70,7 +70,7 @@ class ImageGenerator {
     const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
     const apiKey = process.env.CLOUDINARY_API_KEY;
     const apiSecret = process.env.CLOUDINARY_API_SECRET;
-    
+
     if (!cloudName || !apiKey || !apiSecret) {
       throw new Error('Cloudinary credentials not found in environment variables. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET');
     }
@@ -116,10 +116,12 @@ class ImageGenerator {
     const title = product.Title;
     const color = product['Option2 Value'] || '';
 
-    if (imageType === 'garment_long') {
-      return `Create a professional product photograph of the ${title} in ${color} color floating against a pure white background. Show the complete garment with natural drape and proportions. Studio lighting with soft shadows. E-commerce product photography style.`;
-    } else if (imageType === 'garment_close') {
-      return `Create a detailed close-up photograph of the ${title} in ${color} color against a pure white background. Focus on fabric texture, stitching, and material quality. Professional product photography with sharp focus.`;
+    if (imageType === 'garment_full') {
+      return `Create a professional product photograph of the ${title} in ${color} color floating against a pure white background. Full shot showing the complete garment with natural drape and proportions. Studio lighting with soft shadows. E-commerce product photography style. Using the reference image, match exact colors and design details.`;
+    } else if (imageType === 'garment_closeup') {
+      return `Create a detailed close-up photograph of the ${title} in ${color} color against a pure white background. Close shot focusing on fabric texture, stitching, and material quality. Professional product photography with sharp focus. Using the reference image, replicate exact construction details.`;
+    } else if (imageType === 'garment_angular') {
+      return `Create an artistic product photograph of the ${title} in ${color} color folded or positioned at an angle against a pure white background. Creative arrangement showing the garment from a unique perspective. Professional product photography with clean composition. Using the reference image, maintain exact colors and design details.`;
     } else {
       return `Create a fashion photograph of a model wearing the ${title} in ${color} color. Professional fashion photography with natural lighting and commercial appeal. The garment should be the main focus.`;
     }
@@ -163,16 +165,16 @@ Professional photography quality with natural lighting, accurate colors, and rea
 
   private async executeWithRateLimit<T>(operation: () => Promise<T>): Promise<T> {
     await this.checkRateLimit();
-    
+
     this.requestCount++;
     this.dailyRequestCount++;
-    
+
     try {
       const result = await operation();
-      
+
       // Add delay between requests
       await new Promise(resolve => setTimeout(resolve, this.RATE_LIMITS.delayBetweenRequests));
-      
+
       return result;
     } catch (error) {
       // Don't count failed requests against rate limit
@@ -185,7 +187,7 @@ Professional photography quality with natural lighting, accurate colors, and rea
   private async downloadImage(url: string, targetDir: string, filename: string): Promise<string> {
     const maxRetries = 3;
     let retryCount = 0;
-    
+
     while (retryCount < maxRetries) {
       try {
         const response = await axios({
@@ -209,31 +211,103 @@ Professional photography quality with natural lighting, accurate colors, and rea
       } catch (error: any) {
         retryCount++;
         const isNetworkError = error.code === 'EAI_AGAIN' || error.code === 'ENOTFOUND' || error.code === 'ECONNRESET';
-        
+
         if (retryCount < maxRetries && isNetworkError) {
           const waitTime = Math.min(1000 * Math.pow(2, retryCount), 5000); // Exponential backoff, max 5s
           console.log(`⏳ Network error, retrying in ${waitTime}ms... (${error.code})`);
           await new Promise(resolve => setTimeout(resolve, waitTime));
           continue;
         }
-        
+
         console.error(`❌ Failed to download ${url}:`, error);
         throw error;
       }
     }
-    
+
     throw new Error(`Failed to download after ${maxRetries} attempts`);
   }
 
-  private createGarmentOnlyPrompt(product: Product, isCloseShot: boolean): string {
+  private createGarmentFullViewPrompt(product: Product): string {
     const title = product.Title;
     const color = product['Option2 Value'] || '';
+    const description = product['Body (HTML)']?.replace(/<[^>]*>/g, '') || '';
+    const materialInfo = this.extractMaterialInfo(title, description);
 
-    if (isCloseShot) {
-      return `Create a close-up product photograph of the ${title} in ${color} color floating against a pure white background. Show detailed fabric texture and construction details. Using the provided reference image, replicate the exact color and design details.`;
-    } else {
-      return `Create a full-view product photograph of the ${title} in ${color} color floating against a pure white background. Show the complete garment from top to bottom. Using the provided reference image, replicate the exact color and silhouette.`;
-    }
+    return `Create a professional product photograph of the ${title} in ${color} color floating against a pure white background.
+
+**Full Garment View Requirements:**
+- Complete long shot showing the entire garment from top to bottom
+- Garment perfectly centered and fully visible with natural proportions
+- Natural drape as if floating with subtle shadow beneath for depth
+- Soft, even studio lighting eliminating harsh shadows
+- Hyper-realistic fabric texture showing ${materialInfo || 'material details'}
+- Exact color fidelity matching the reference image
+- No models, hangers, or props - garment only
+- Professional e-commerce catalog quality
+- Show complete silhouette and overall design
+
+The garment should appear naturally draped under its own weight, displaying the complete design, cut, and proportions. Using the provided reference image, replicate the exact design, color, and overall appearance with photorealistic precision.`;
+  }
+
+  private createGarmentCloseUpPrompt(product: Product): string {
+    const title = product.Title;
+    const color = product['Option2 Value'] || '';
+    const description = product['Body (HTML)']?.replace(/<[^>]*>/g, '') || '';
+    const materialInfo = this.extractMaterialInfo(title, description);
+
+    return `Create a detailed close-up product photograph focusing on specific details of the ${title} in ${color} color against a pure white background.
+
+**Close-Up Detail Requirements:**
+- Tight crop focusing on fabric texture, stitching, and construction details
+- Show material weave, thread quality, and craftsmanship up close
+- Highlight specific design elements like buttons, zippers, seams, or patterns
+- Sharp focus on texture with shallow depth of field
+- Capture ${materialInfo || 'fabric'} texture authentically
+- Professional macro photography quality
+- No full garment view - focus on specific detail area only
+- Exact color and material fidelity matching the reference image
+
+Focus on showcasing the quality and craftsmanship through detailed close-up shots of fabric texture, stitching, hardware, or unique design elements. Using the provided reference image, identify and highlight the most interesting construction or material details.`;
+  }
+
+  private createGarmentAngularPrompt(product: Product): string {
+    const title = product.Title;
+    const color = product['Option2 Value'] || '';
+    const description = product['Body (HTML)']?.replace(/<[^>]*>/g, '') || '';
+    const materialInfo = this.extractMaterialInfo(title, description);
+
+    return `Create a professional product photograph of the ${title} in ${color} color in an artistic angular or folded presentation against a pure white background.
+
+**Angular/Folded View Requirements:**
+- Garment artistically folded, laid flat, or positioned at an interesting angle
+- Show the garment from a unique perspective (diagonal, partially folded, or geometric arrangement)
+- Maintain clean, minimalist composition with negative space
+- Soft, even lighting creating subtle shadows for dimension
+- Hyper-realistic fabric texture showing ${materialInfo || 'material details'}
+- Exact color fidelity matching the reference image
+- No models, hangers, or props - garment only in artistic arrangement
+- Professional lifestyle product photography quality
+- Creative but clean presentation showing garment's versatility
+
+Present the garment in an artistic, angular, or folded arrangement that shows its design from a fresh perspective while maintaining professional product photography standards. Using the provided reference image, ensure exact color and design accuracy in this creative presentation.`;
+  }
+
+  private extractMaterialInfo(title: string, description: string): string {
+    const text = `${title} ${description}`.toLowerCase();
+    const materials = [];
+
+    // Common Turkish fabric terms
+    if (text.includes('pamuk') || text.includes('cotton')) materials.push('cotton');
+    if (text.includes('yün') || text.includes('wool')) materials.push('wool');
+    if (text.includes('kaşmir') || text.includes('cashmere')) materials.push('cashmere');
+    if (text.includes('ipek') || text.includes('silk')) materials.push('silk');
+    if (text.includes('triko') || text.includes('knit')) materials.push('knit');
+    if (text.includes('denim') || text.includes('kot')) materials.push('denim');
+    if (text.includes('polyester')) materials.push('polyester');
+    if (text.includes('elastan') || text.includes('spandex')) materials.push('stretch');
+    if (text.includes('viskon') || text.includes('viscose')) materials.push('viscose');
+
+    return materials.length > 0 ? materials.join(', ') : '';
   }
 
   private async generatePhotoshootScenes(product: Product, imageData: Buffer): Promise<PhotoshootScene[]> {
@@ -249,7 +323,7 @@ Professional photography quality with natural lighting, accurate colors, and rea
       'Beatnik Chic', 'Ivy League/Preppy', 'Utility/Workwear', 'Hollywood Glamour (Golden Age)',
       'Safari/Explorer', 'Minimalist Modern', 'Art Deco Elegance', 'Sporty Luxe', 'Gothic Romance',
       'Victorian/Edwardian Inspired', 'Rocker/Rebel', 'Nautical', 'Western/Cowboy', 'Flapper (1920s)',
-      'Mod (Mid-60s British)', 'Cottagecore', 'Androgynous Tailoring', 'Punk (Early)', 
+      'Mod (Mid-60s British)', 'Cottagecore', 'Androgynous Tailoring', 'Punk (Early)',
       'Savile Row Bespoke', 'Mediterranean Resort',
       // 10 additional vintage/timeless aesthetics
       'Italian Riviera (1950s)', 'Parisian Atelier', 'English Country Estate', 'New York Socialite (1940s)',
@@ -259,65 +333,88 @@ Professional photography quality with natural lighting, accurate colors, and rea
 
     // Randomly select ONE aesthetic for this product
     const selectedAesthetic = aestheticStyles[Math.floor(Math.random() * aestheticStyles.length)];
-    
+
     console.log(`🎨 Selected aesthetic: ${selectedAesthetic} for ${title}`);
 
-    const prompt = `Using the provided garment image as reference, create a single fashion photoshoot concept for the ${title} in ${color} color using the ${selectedAesthetic} aesthetic.
+    const prompt = `### 🪞 AESTHETIC INPUT
+${selectedAesthetic}
 
-Garment Details:
-- Product: ${title}
-- Color: ${color}
+---
+
+### 👗 FOCUS GARMENT
+**Garment:** ${title} in ${color} color
 - Style characteristics: ${tags}
 - Description: ${description}
 
-AESTHETIC REQUIREMENT: You must create a scene using the ${selectedAesthetic} aesthetic style.
+---
 
-Analyze the provided garment image and create a detailed photoshoot concept that includes:
+### 📸 PHOTOSHOOT SCENE PROMPT
+Create a high-fashion, editorial-style photoshoot inspired by the ${selectedAesthetic} aesthetic guide above.
 
-1. Why the ${selectedAesthetic} aesthetic perfectly suits this specific garment
-2. A specific, authentic location that embodies ${selectedAesthetic} style
-3. The exact mood and atmosphere that captures ${selectedAesthetic} essence
-4. Professional lighting setup appropriate for ${selectedAesthetic} aesthetic
-5. Complete model styling (hair, makeup, accessories) authentic to ${selectedAesthetic}
-6. Model pose and expression that embodies ${selectedAesthetic} attitude
-7. Camera composition and framing that enhances ${selectedAesthetic} visual language
-8. 3-5 specific props that are authentic to ${selectedAesthetic} period/style
+- The photoshoot is centered around the garment described.
+- Set the scene according to the aesthetic's emotional tone and cultural references (e.g. 1960s Parisian charm, sun-faded Mediterranean coast, desert minimalism, etc.).
+- Model poses naturally, evoking the mood from the guide — romantic, effortless, nostalgic, or bold.
+- The garment is highlighted through lighting, motion, and styling to reflect its texture and silhouette accurately.
 
-The scene must be aspirational, magazine-quality, and make the garment the hero while authentically representing the ${selectedAesthetic} aesthetic. Focus on historical accuracy and lifestyle authenticity for the chosen aesthetic.`;
+---
+
+### 🔍 KEY SHOT TYPES
+1. **Close-Up** – fabric texture, buttons, pleats, stitching
+2. **Full Body** – silhouette in motion (walking, turning, wind)
+3. **Candid** – off-guard moment (model laughing, looking away, resting)
+4. **Still Life** – garment alone on chair, hanging, or sunlit
+
+---
+
+### 🎨 VISUAL STYLE GUIDE
+- **Lighting:** Natural light, golden hour, or soft indoor shadows
+- **Color Palette:** Follows tones in the aesthetic (earthy, muted, pastel, noir, etc.)
+- **Film Look:** 35mm analog grain, soft focus, vintage finish
+- **Mood:** Editorial yet cinematic — intimate, timeless, and artful
+
+---
+
+### 🧵 NOTES FOR IMAGE GENERATION TOOLS
+- Prioritize **garment accuracy**: fabric, shape, and color fidelity are crucial.
+- No mannequin poses — scene should feel alive, cinematic, and atmospheric.
+- No heavy digital filters or modern effects — keep it era-consistent.
+- If possible, incorporate movement: the garment fluttering, wind, soft walk, etc.
+
+Analyze the provided garment image and create a detailed photoshoot concept that authentically represents the ${selectedAesthetic} aesthetic while making the garment the hero of the scene.`;
 
     try {
-      const model = this.genAI.getGenerativeModel({ 
+      const model = this.genAI.getGenerativeModel({
         model: "gemini-2.5-flash",
         generationConfig: {
           responseMimeType: "application/json",
           responseSchema: {
             type: SchemaType.OBJECT,
             properties: {
-              aesthetic: { 
+              aesthetic: {
                 type: SchemaType.STRING,
                 description: "The chosen aesthetic style"
               },
-              setting: { 
+              setting: {
                 type: SchemaType.STRING,
                 description: "Detailed description of the location/environment"
               },
-              mood: { 
+              mood: {
                 type: SchemaType.STRING,
                 description: "The overall atmosphere and emotional tone"
               },
-              lighting: { 
+              lighting: {
                 type: SchemaType.STRING,
                 description: "Specific lighting style and quality"
               },
-              styling: { 
+              styling: {
                 type: SchemaType.STRING,
                 description: "Accessories, hair, makeup, and styling choices"
               },
-              model_description: { 
+              model_description: {
                 type: SchemaType.STRING,
                 description: "Description of the model including pose and expression"
               },
-              composition: { 
+              composition: {
                 type: SchemaType.STRING,
                 description: "Camera angle, framing, and visual composition"
               },
@@ -348,7 +445,7 @@ The scene must be aspirational, magazine-quality, and make the garment the hero 
 
       const response = result.response;
       const jsonResponse = JSON.parse(response.text());
-      
+
       console.log(`✅ Generated photoshoot scene with ${jsonResponse.aesthetic} aesthetic for ${product.Title}`);
       return [jsonResponse]; // Return as array to maintain compatibility
 
@@ -357,7 +454,7 @@ The scene must be aspirational, magazine-quality, and make the garment the hero 
       // Return fallback scene (single scene)
       const fallbackAesthetics = ['Minimalist Modern', 'Old money', 'French new wave'];
       const randomFallback = fallbackAesthetics[Math.floor(Math.random() * fallbackAesthetics.length)];
-      
+
       return [
         {
           aesthetic: randomFallback,
@@ -377,48 +474,70 @@ The scene must be aspirational, magazine-quality, and make the garment the hero 
     const title = product.Title;
     const color = product['Option2 Value'] || '';
 
-    return `A photorealistic fashion photograph of a professional model wearing the ${title} in ${color} color, set in ${scene.setting}. The scene is illuminated by ${scene.lighting}, creating a ${scene.mood} atmosphere. Captured with an 85mm portrait lens, emphasizing the garment's fit, drape, and fabric texture. The styling includes ${scene.styling}. The model ${scene.model_description}. The composition follows ${scene.composition} with props including ${scene.props.join(', ')}.
+    return `An atmospheric and grainy 35mm analog film photograph with a timeless, avant-garde aesthetic. The scene captures a candid, adventurous moment, rendered in a specific warm and earthy color palette. While the subject's face may be visible, the focus remains on the overall mood and texture, avoiding the feel of a traditional, posed portrait.
 
-The aesthetic is ${scene.aesthetic} with authentic period styling and environmental details. Professional fashion photography quality with natural lighting, realistic fabric behavior, and commercial appeal. The garment should be the clear hero of the image while maintaining the aspirational lifestyle context.
+**Core Mandate: Clothing Fidelity**
+- **Extreme High Fidelity:** The primary instruction is to replicate the piece of clothing from the provided reference image with the highest possible accuracy. Every detail, including the fabric's texture, drape, color, and any patterns or logos, must be rendered faithfully. The clothing is the central element of the image.
 
-Using the provided reference image, ensure the garment maintains its exact color, fit, and design details as shown in the original. The model should wear the garment naturally without distorting its original silhouette or proportions.`;
+**Color Palette & Film Stock:**
+- **Inspiration:** The rich, warm tones of Kodak Portra 400 film.
+- **Primary Tones:** Muted terracotta, deep olive green, and a dark charcoal black with deep shadows.
+- **Accent/Highlight Color:** Soft, creamy off-white or light beige for highlights.
+- **Overall Feel:** Colors are warm and natural with a cinematic quality. Saturation is gentle, preserving a soft, film-like appearance.
+
+**Visual Style:**
+- **Format:** Shot on 35mm film, resulting in a classic 3:2 aspect ratio. The image should fill the entire frame with no artificial borders.
+- **Texture:** A visible and natural film grain is essential. Avoid digital noise.
+- **Lens & Camera Effects:** Emulate the characteristics of a vintage prime lens. This includes a shallow depth of field (soft, blurry background or 'bokeh'), subtle vignetting (darker corners), and the possibility of organic lens flare if the scene is backlit.
+- **Composition:** Unconventional and artistic. Use of negative space, low or high angles, and a focus on texture, form, and the interplay of light and shadow. The composition should feel candid and spontaneous, even if a face is in the frame.
+- **Mood:** Nostalgic, timeless, adventurous, and cinematic.
+
+**Scene:**
+The model wearing the ${title} in ${color} color is positioned in ${scene.setting}. The scene is illuminated by ${scene.lighting}, creating a ${scene.mood} atmosphere that embodies the ${scene.aesthetic} aesthetic. The styling includes ${scene.styling}. The model ${scene.model_description}. The composition follows ${scene.composition} with authentic props including ${scene.props.join(', ')}. The garment should be the hero of the image while maintaining the aspirational lifestyle context and period authenticity.
+
+**Negative Prompt (to reinforce consistency):**
+- digital artifacts, clean digital look, modern technology, brightly saturated colors, cool tones, blues, cyans, Polaroid border, white frame, overly sharp details, generic studio portrait.
+
+Using the provided reference image, ensure the ${title} maintains its exact color, fit, and design details as shown in the original. The garment should appear naturally worn without distorting its original silhouette or proportions.`;
   }
 
   private async generateImages(product: Product, originalImagePath: string, generatedDir: string): Promise<string[]> {
     try {
       const model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash-image-preview" });
-      
+
       // Read the original image
       const imageData = fs.readFileSync(originalImagePath);
-      
+
       const generatedImages: string[] = [];
-      
+
       // First, generate photoshoot scenes using structured output
       console.log(`🎬 Generating photoshoot scene concepts for ${product.Title}...`);
       const photoshootScenes = await this.generatePhotoshootScenes(product, imageData);
-      
+
       // Save scene concepts to metadata
       const scenesPath = path.join(generatedDir, 'photoshoot_scenes.json');
       fs.writeFileSync(scenesPath, JSON.stringify(photoshootScenes, null, 2));
-      
-      // Define the 4 image types we want to generate - ALL use original image as input
+
+      // Define the 5 image types we want to generate - ALL use original image as input
       const selectedScene = photoshootScenes[0]; // Use the single generated scene
       const imageTypes = [
-        { type: 'garment_long', name: 'Garment Full View', useOriginal: true, scene: null },
-        { type: 'garment_close', name: 'Garment Close-up', useOriginal: true, scene: null },
+        { type: 'garment_full', name: 'Garment Full View', useOriginal: true, scene: null },
+        { type: 'garment_closeup', name: 'Garment Close-up Details', useOriginal: true, scene: null },
+        { type: 'garment_angular', name: 'Garment Angular/Folded View', useOriginal: true, scene: null },
         { type: 'photoshoot_1', name: `Styled Photoshoot (${selectedScene?.aesthetic || 'Scene 1'})`, useOriginal: true, scene: selectedScene },
         { type: 'photoshoot_2', name: `Styled Photoshoot Variation (${selectedScene?.aesthetic || 'Scene 2'})`, useOriginal: true, scene: selectedScene }
       ];
-      
-      // Generate 4 specific images with rate limiting
+
+      // Generate 5 specific images with rate limiting
       for (let i = 0; i < imageTypes.length; i++) {
         try {
           const imageType = imageTypes[i];
           let prompt: string;
           let contentArray: any[];
+          let currentScene = imageType.scene; // Track current scene for photoshoot images
 
-          if (imageType.type === 'garment_long') {
-            const basePrompt = this.createGarmentOnlyPrompt(product, false);
+          if (imageType.type === 'garment_full') {
+            const basePrompt = this.createGarmentFullViewPrompt(product);
             prompt = this.enhancePromptWithTechnicalSpecs(basePrompt);
             contentArray = [
               prompt,
@@ -429,8 +548,8 @@ Using the provided reference image, ensure the garment maintains its exact color
                 }
               }
             ];
-          } else if (imageType.type === 'garment_close') {
-            const basePrompt = this.createGarmentOnlyPrompt(product, true);
+          } else if (imageType.type === 'garment_closeup') {
+            const basePrompt = this.createGarmentCloseUpPrompt(product);
             prompt = this.enhancePromptWithTechnicalSpecs(basePrompt);
             contentArray = [
               prompt,
@@ -441,9 +560,21 @@ Using the provided reference image, ensure the garment maintains its exact color
                 }
               }
             ];
-          } else if (imageType.scene) {
+          } else if (imageType.type === 'garment_angular') {
+            const basePrompt = this.createGarmentAngularPrompt(product);
+            prompt = this.enhancePromptWithTechnicalSpecs(basePrompt);
+            contentArray = [
+              prompt,
+              {
+                inlineData: {
+                  data: imageData.toString('base64'),
+                  mimeType: 'image/webp'
+                }
+              }
+            ];
+          } else if (imageType.scene && currentScene) {
             // Photoshoot images - use generated scene concept with original image as reference
-            const basePrompt = this.createPhotoshootPrompt(product, imageType.scene);
+            const basePrompt = this.createPhotoshootPrompt(product, currentScene);
             prompt = this.enhancePromptWithTechnicalSpecs(basePrompt);
             contentArray = [
               prompt,
@@ -466,8 +597,9 @@ Using the provided reference image, ensure the garment maintains its exact color
           let retryCount = 0;
           const maxRetries = 3;
           let success = false;
-          let currentPrompt = prompt;
           let currentContentArray = contentArray;
+          let sceneRegenerateCount = 0;
+          const maxSceneRegenerates = 2; // Allow up to 2 scene regenerations for photoshoot images
 
           while (retryCount < maxRetries && !success) {
             try {
@@ -483,10 +615,10 @@ Using the provided reference image, ensure the garment maintains its exact color
                   if (part.inlineData) {
                     const filename = `generated_${i + 1}_${imageType.type}.png`;
                     const filePath = path.join(generatedDir, filename);
-                    
+
                     fs.writeFileSync(filePath, Buffer.from(part.inlineData.data, 'base64'));
                     generatedImages.push(filePath);
-                    
+
                     console.log(`✅ Generated ${imageType.name} for ${product.Title} saved to ${filePath}`);
                     success = true;
                     break;
@@ -497,15 +629,69 @@ Using the provided reference image, ensure the garment maintains its exact color
               if (!success) {
                 console.warn(`⚠️ No image data received for ${imageType.name}, retrying...`);
                 retryCount++;
+                
+                // For photoshoot images, try regenerating scene after first failure
+                if (imageType.scene && currentScene && retryCount === 1 && sceneRegenerateCount < maxSceneRegenerates) {
+                  console.log(`🎬 Regenerating scene for ${imageType.name} (attempt ${sceneRegenerateCount + 1}/${maxSceneRegenerates})...`);
+                  try {
+                    const newScenes = await this.generatePhotoshootScenes(product, imageData);
+                    if (newScenes && newScenes.length > 0) {
+                      currentScene = newScenes[0];
+                      const newBasePrompt = this.createPhotoshootPrompt(product, currentScene);
+                      const newPrompt = this.enhancePromptWithTechnicalSpecs(newBasePrompt);
+                      currentContentArray = [
+                        newPrompt,
+                        {
+                          inlineData: {
+                            data: imageData.toString('base64'),
+                            mimeType: 'image/webp'
+                          }
+                        }
+                      ];
+                      sceneRegenerateCount++;
+                      console.log(`✅ Generated new scene: ${currentScene.aesthetic} for ${imageType.name}`);
+                      retryCount--; // Don't count this as a retry since we have a new scene
+                    }
+                  } catch (sceneError) {
+                    console.warn(`⚠️ Failed to regenerate scene for ${imageType.name}:`, sceneError instanceof Error ? sceneError.message : sceneError);
+                  }
+                }
               }
 
             } catch (error) {
               retryCount++;
               console.error(`❌ Attempt ${retryCount}/${maxRetries} failed for ${imageType.name}:`, error instanceof Error ? error.message : error);
-              
+
               if (retryCount < maxRetries) {
-                // Try with fallback prompt on second retry
-                if (retryCount === 2) {
+                // For photoshoot images, try regenerating scene before fallback prompt
+                if (imageType.scene && currentScene && retryCount === 2 && sceneRegenerateCount < maxSceneRegenerates) {
+                  console.log(`🎬 Regenerating scene for ${imageType.name} (attempt ${sceneRegenerateCount + 1}/${maxSceneRegenerates})...`);
+                  try {
+                    const newScenes = await this.generatePhotoshootScenes(product, imageData);
+                    if (newScenes && newScenes.length > 0) {
+                      currentScene = newScenes[0];
+                      const newBasePrompt = this.createPhotoshootPrompt(product, currentScene);
+                      const newPrompt = this.enhancePromptWithTechnicalSpecs(newBasePrompt);
+                      currentContentArray = [
+                        newPrompt,
+                        {
+                          inlineData: {
+                            data: imageData.toString('base64'),
+                            mimeType: 'image/webp'
+                          }
+                        }
+                      ];
+                      sceneRegenerateCount++;
+                      console.log(`✅ Generated new scene: ${currentScene.aesthetic} for ${imageType.name}`);
+                      retryCount--; // Don't count this as a retry since we have a new scene
+                    }
+                  } catch (sceneError) {
+                    console.warn(`⚠️ Failed to regenerate scene for ${imageType.name}:`, sceneError instanceof Error ? sceneError.message : sceneError);
+                  }
+                }
+                
+                // Try with fallback prompt on final retry
+                if (retryCount === maxRetries - 1) {
                   console.log(`🔄 Trying with simplified prompt for ${imageType.name}...`);
                   const fallbackPrompt = this.createFallbackPrompt(product, imageType.type);
                   currentContentArray = [
@@ -518,7 +704,7 @@ Using the provided reference image, ensure the garment maintains its exact color
                     }
                   ];
                 }
-                
+
                 const waitTime = Math.min(1000 * Math.pow(2, retryCount), 10000); // Exponential backoff, max 10s
                 console.log(`⏳ Waiting ${waitTime}ms before retry...`);
                 await new Promise(resolve => setTimeout(resolve, waitTime));
@@ -528,11 +714,14 @@ Using the provided reference image, ensure the garment maintains its exact color
 
           if (!success) {
             console.error(`❌ Failed to generate ${imageType.name} after ${maxRetries} attempts with both enhanced and fallback prompts`);
+            if (imageType.scene && currentScene && sceneRegenerateCount > 0) {
+              console.log(`🎬 Tried ${sceneRegenerateCount} scene regenerations for ${imageType.name}`);
+            }
           }
 
         } catch (error) {
           console.error(`❌ Error generating ${imageTypes[i].name} for ${product.Title}:`, error);
-          
+
           // Check if it's a rate limit error and handle accordingly
           if (error instanceof Error && (error.message?.includes('rate limit') || error.message?.includes('quota'))) {
             console.log('⏳ Rate limit hit, waiting before retry...');
@@ -542,7 +731,7 @@ Using the provided reference image, ensure the garment maintains its exact color
           }
         }
       }
-      
+
       return generatedImages;
     } catch (error) {
       console.error(`❌ Error in generateImages for ${product.Title}:`, error);
@@ -556,7 +745,7 @@ Using the provided reference image, ensure the garment maintains its exact color
 
       const sanitizedTitle = title.replace(/[^a-zA-Z0-9\-_]/g, '_').toLowerCase();
       const timestamp = Date.now();
-      const publicId = productHandle 
+      const publicId = productHandle
         ? `${productHandle}/${sanitizedTitle}_${timestamp}`
         : `${sanitizedTitle}_${timestamp}`;
 
@@ -601,7 +790,7 @@ Using the provided reference image, ensure the garment maintains its exact color
 
   async listProducts(csvPath: string = '/home/yavuz/Projects/shopify_automation/output/lmv_shopify_products.csv', limit: number = 10): Promise<void> {
     const products: Product[] = [];
-    
+
     return new Promise((resolve, reject) => {
       fs.createReadStream(csvPath)
         .pipe(csv())
@@ -611,14 +800,14 @@ Using the provided reference image, ensure the garment maintains its exact color
           }
         })
         .on('end', () => {
-          const uniqueProducts = products.filter((product, index, self) => 
+          const uniqueProducts = products.filter((product, index, self) =>
             index === self.findIndex(p => p.Handle === product.Handle)
           );
-          
+
           console.log(`📦 Found ${uniqueProducts.length} unique products with images\n`);
           console.log('First', Math.min(limit, uniqueProducts.length), 'products:');
           console.log('─'.repeat(80));
-          
+
           uniqueProducts.slice(0, limit).forEach((product, index) => {
             console.log(`${index + 1}. Handle: ${product.Handle}`);
             console.log(`   Title: ${product.Title}`);
@@ -627,11 +816,11 @@ Using the provided reference image, ensure the garment maintains its exact color
             console.log(`   Image: ${product['Image Src'].substring(0, 60)}...`);
             console.log('');
           });
-          
+
           if (uniqueProducts.length > limit) {
             console.log(`... and ${uniqueProducts.length - limit} more products`);
           }
-          
+
           resolve();
         })
         .on('error', reject);
@@ -654,7 +843,7 @@ Using the provided reference image, ensure the garment maintains its exact color
     } = options;
 
     const products: Product[] = [];
-    
+
     // Read CSV
     return new Promise((resolve, reject) => {
       fs.createReadStream(csvPath)
@@ -667,12 +856,12 @@ Using the provided reference image, ensure the garment maintains its exact color
         })
         .on('end', async () => {
           console.log(`Found ${products.length} products with images`);
-          
+
           // Process unique products (avoid duplicates from size variants)
-          let uniqueProducts = products.filter((product, index, self) => 
+          let uniqueProducts = products.filter((product, index, self) =>
             index === self.findIndex(p => p.Handle === product.Handle)
           );
-          
+
           // Filter by specific handle if provided
           if (specificHandle) {
             uniqueProducts = uniqueProducts.filter(p => p.Handle === specificHandle);
@@ -683,32 +872,32 @@ Using the provided reference image, ensure the garment maintains its exact color
               return;
             }
           }
-          
+
           // Apply start index and limit
           const startIdx = Math.max(0, startIndex);
           const endIdx = limit ? Math.min(startIdx + limit, uniqueProducts.length) : uniqueProducts.length;
           const productsToProcess = uniqueProducts.slice(startIdx, endIdx);
-          
+
           console.log(`Processing ${productsToProcess.length} unique products (${startIdx + 1}-${endIdx} of ${uniqueProducts.length})`);
           console.log(`📊 Rate Limits: ${this.RATE_LIMITS.requestsPerMinute}/min, ${this.RATE_LIMITS.requestsPerDay}/day, ${this.RATE_LIMITS.delayBetweenRequests}ms delay, ${this.RATE_LIMITS.imagesPerProduct} images per product`);
-          
+
           if (testMode) {
             console.log(`🧪 TEST MODE: Processing ${productsToProcess.length} products`);
           }
-          
+
           const processedProducts: Product[] = [];
-          
+
           for (const product of productsToProcess) {
             try {
               console.log(`Processing: ${product.Title}`);
-              
+
               // Create organized directory structure using product handle
               const { originalDir, generatedDir } = this.createProductDirectories(product.Handle);
-              
+
               // Process the main image URL
               const imageUrl = product['Image Src'].trim();
               const urlHash = this.generateUrlHash(imageUrl);
-              
+
               try {
                 // Download original image to organized directory
                 const originalImagePath = await this.downloadImage(
@@ -716,33 +905,34 @@ Using the provided reference image, ensure the garment maintains its exact color
                   originalDir,
                   `original_${urlHash}.webp`
                 );
-                
+
                 // Generate new images in the generated directory
                 const generatedImagePaths = await this.generateImages(product, originalImagePath, generatedDir);
-                
+
                 if (generatedImagePaths.length > 0) {
                   // Upload to Cloudinary with descriptive titles
                   const uploadedUrls: string[] = [];
                   const imageTypeNames = [
                     'Full View - White Background',
                     'Close-up Details - White Background', 
+                    'Angular/Folded View - White Background',
                     'Styled Photoshoot Scene 1',
                     'Styled Photoshoot Scene 2'
                   ];
-                  
+
                   console.log(`📤 Uploading ${generatedImagePaths.length} images to Cloudinary...`);
-                  
+
                   for (let i = 0; i < generatedImagePaths.length; i++) {
                     const imageTypeName = imageTypeNames[i] || `Generated ${i + 1}`;
                     console.log(`📤 Processing image ${i + 1}/${generatedImagePaths.length}: ${imageTypeName}`);
-                    
+
                     // Upload to Cloudinary
                     const uploadedUrl = await this.uploadToCloudinary(
-                      generatedImagePaths[i], 
+                      generatedImagePaths[i],
                       `${product.Title} - ${imageTypeName}`,
                       product.Handle
                     );
-                    
+
                     if (uploadedUrl && !uploadedUrl.includes('file://')) {
                       uploadedUrls.push(uploadedUrl);
                       console.log(`✅ Upload ${i + 1} successful: ${uploadedUrl}`);
@@ -753,10 +943,10 @@ Using the provided reference image, ensure the garment maintains its exact color
                       console.log(`📁 Using local path for image ${i + 1}: ${path.basename(generatedImagePaths[i])}`);
                     }
                   }
-                  
+
                   const successfulUploads = uploadedUrls.filter(url => !url.includes('file://')).length;
                   console.log(`📊 Upload summary: ${successfulUploads}/${generatedImagePaths.length} uploaded to Cloudinary, ${generatedImagePaths.length - successfulUploads} stored locally`);
-                  
+
                   if (uploadedUrls.length > 0) {
                     // Read the generated scenes for metadata
                     let photoshootScenes: PhotoshootScene[] = [];
@@ -775,37 +965,42 @@ Using the provided reference image, ensure the garment maintains its exact color
                         generatedCount: uploadedUrls.length,
                         photoshootScenes: photoshootScenes,
                         imageTypes: [
-                          { 
-                            type: 'garment_full_view', 
-                            url: uploadedUrls[0] || null, 
-                            description: 'Full garment view on white background' 
+                          {
+                            type: 'garment_full_view',
+                            url: uploadedUrls[0] || null,
+                            description: 'Full garment view on white background'
                           },
-                          { 
-                            type: 'garment_closeup', 
-                            url: uploadedUrls[1] || null, 
-                            description: 'Close-up details on white background' 
+                          {
+                            type: 'garment_closeup',
+                            url: uploadedUrls[1] || null,
+                            description: 'Close-up details on white background'
                           },
-                          { 
-                            type: 'styled_photoshoot_1', 
-                            url: uploadedUrls[2] || null, 
+                          {
+                            type: 'garment_angular',
+                            url: uploadedUrls[2] || null,
+                            description: 'Angular/folded view on white background'
+                          },
+                          {
+                            type: 'styled_photoshoot_1',
+                            url: uploadedUrls[3] || null,
                             description: `Professional styled photoshoot - ${photoshootScenes[0]?.aesthetic || 'Scene 1'}`,
                             scene: photoshootScenes[0] || null
                           },
-                          { 
-                            type: 'styled_photoshoot_2', 
-                            url: uploadedUrls[3] || null, 
+                          {
+                            type: 'styled_photoshoot_2',
+                            url: uploadedUrls[4] || null,
                             description: `Professional styled photoshoot variation - ${photoshootScenes[0]?.aesthetic || 'Scene 2'}`,
                             scene: photoshootScenes[0] || null
                           }
                         ]
                       }
                     };
-                    
+
                     await this.saveMetadata(product, generatedImages, path.join(this.tempDir, product.Handle));
-                    
+
                     // Store all generated URLs for CSV update
                     product['_generatedImages'] = uploadedUrls;
-                    
+
                     console.log(`✅ Processed ${product.Title} - Generated ${uploadedUrls.length} images`);
                   }
                 }
@@ -814,18 +1009,18 @@ Using the provided reference image, ensure the garment maintains its exact color
                 console.log(`⏭️  Skipping ${product.Title} - cannot process without original image`);
                 continue; // Skip this product entirely
               }
-              
+
               processedProducts.push(product);
-              
+
             } catch (error) {
               console.error(`❌ Error processing ${product.Title}:`, error);
               processedProducts.push(product); // Keep original
             }
           }
-          
+
           // Update CSV with new image URLs
           await this.updateCsv(products, processedProducts);
-          
+
           console.log('✅ Processing complete!');
           resolve();
         })
@@ -836,32 +1031,32 @@ Using the provided reference image, ensure the garment maintains its exact color
   private async updateCsv(allProducts: Product[], processedProducts: Product[]): Promise<void> {
     // Create a map of processed products with generated images
     const processedMap = new Map(processedProducts.map(p => [p.Handle, p]));
-    
+
     const updatedProducts: Product[] = [];
-    
+
     for (const product of allProducts) {
       const processed = processedMap.get(product.Handle);
-      
+
       if (processed && processed['_generatedImages']) {
-        const generatedImages = Array.isArray(processed['_generatedImages']) 
+        const generatedImages = Array.isArray(processed['_generatedImages'])
           ? processed['_generatedImages'] as string[]
           : [];
-        
+
         // Find the highest existing image position for this product
         const existingImagePositions = allProducts
           .filter(p => p.Handle === product.Handle && p['Image Position'])
           .map(p => parseInt(p['Image Position'].toString()) || 0);
-        
+
         const maxPosition = existingImagePositions.length > 0 ? Math.max(...existingImagePositions) : 0;
-        
+
         // Add the original product (unchanged)
         updatedProducts.push(product);
-        
+
         // Add new image rows for ALL generated images (don't skip any)
         for (let i = 0; i < generatedImages.length; i++) {
           const imageUrl = generatedImages[i];
           const imagePosition = maxPosition + i + 1;
-          
+
           // Create image-only row (all other fields empty except Handle and image fields)
           const imageRow: Product = {
             ...Object.keys(product).reduce((acc, key) => {
@@ -873,7 +1068,7 @@ Using the provided reference image, ensure the garment maintains its exact color
             'Image Position': imagePosition.toString(),
             'Image Alt Text': `${product.Title} - Generated Image ${i + 1}`
           };
-          
+
           updatedProducts.push(imageRow);
         }
 
@@ -882,25 +1077,25 @@ Using the provided reference image, ensure the garment maintains its exact color
         updatedProducts.push(product);
       }
     }
-    
+
     // Write updated CSV
     const outputPath = path.join(__dirname, 'output', 'updated_lmv_shopify_products.csv');
-    
+
     // Ensure output directory exists
     const outputDir = path.dirname(outputPath);
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }
-    
+
     // Clean up the _generatedImages field before writing
     const cleanedProducts = updatedProducts.map(product => {
       const { _generatedImages, ...cleanProduct } = product as any;
       return cleanProduct;
     });
-    
+
     // Get original headers (without _generatedImages)
     const originalHeaders = Object.keys(allProducts[0]).filter(key => key !== '_generatedImages');
-    
+
     // Also ensure cleanedProducts don't have the _generatedImages field in their keys
     const finalProducts = cleanedProducts.map(product => {
       const cleanedProduct: any = {};
@@ -909,21 +1104,21 @@ Using the provided reference image, ensure the garment maintains its exact color
       });
       return cleanedProduct;
     });
-    
+
     const csvWriter = createObjectCsvWriter({
       path: outputPath,
       header: originalHeaders.map(key => ({ id: key, title: key }))
     });
-    
+
     await csvWriter.writeRecords(finalProducts);
     console.log(`✅ Updated CSV saved to: ${outputPath} with ${finalProducts.length} rows`);
-    
+
     // Log summary of changes
     const processedHandles = Array.from(processedMap.keys());
-    const addedImageRows = finalProducts.filter(p => 
+    const addedImageRows = finalProducts.filter(p =>
       processedHandles.includes(p.Handle) && p['Image Src'] && !p.Title
     ).length;
-    
+
     console.log(`📊 Summary: Added ${addedImageRows} new image rows for ${processedHandles.length} processed products`);
   }
 }
@@ -941,10 +1136,10 @@ function parseArguments(): {
 } {
   const args = process.argv.slice(2);
   const options: any = {};
-  
+
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    
+
     switch (arg) {
       case '--limit':
       case '-l':
@@ -984,7 +1179,7 @@ function parseArguments(): {
         break;
     }
   }
-  
+
   return options;
 }
 
@@ -1025,8 +1220,8 @@ QUICK TESTING:
 
 RATE LIMITS:
   - Default: 400 requests/minute, 500k requests/day
-  - Each product uses 5 API calls (1 scene + 4 images)
-  - Approximately 80 products per minute maximum
+  - Each product uses 6 API calls (1 scene + 5 images)
+  - Approximately 66 products per minute maximum
 
 OUTPUT:
   - Images saved to: ./temp_images/[product-handle]/
@@ -1040,36 +1235,36 @@ OUTPUT:
 async function main() {
   try {
     const options = parseArguments();
-    
+
     if (options.help) {
       showHelp();
       return;
     }
-    
+
     const generator = new ImageGenerator();
-    
+
     // Handle list command
     if (options.list) {
       await generator.listProducts(options.csvPath, options.listLimit || 10);
       return;
     }
-    
+
     // Validate arguments
     if (options.limit !== undefined && (options.limit < 1 || options.limit > 1000)) {
       console.error('❌ Limit must be between 1 and 1000');
       process.exit(1);
     }
-    
+
     if (options.startIndex !== undefined && options.startIndex < 0) {
       console.error('❌ Start index must be 0 or greater');
       process.exit(1);
     }
-    
+
     if (options.csvPath && !fs.existsSync(options.csvPath)) {
       console.error(`❌ CSV file not found: ${options.csvPath}`);
       process.exit(1);
     }
-    
+
     // Show execution plan
     console.log('🚀 Image Generator Starting...');
     if (options.limit) console.log(`📊 Limit: ${options.limit} products`);
@@ -1078,11 +1273,11 @@ async function main() {
     if (options.testMode) console.log(`🧪 Test mode: ENABLED`);
     if (options.specificHandle) console.log(`🎯 Specific handle: ${options.specificHandle}`);
     console.log('');
-    
+
     await generator.processProducts(options);
-    
+
     console.log('\n✅ Image generation completed successfully!');
-    
+
   } catch (error) {
     console.error('❌ Fatal error:', error);
     process.exit(1);

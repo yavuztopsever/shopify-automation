@@ -1,0 +1,103 @@
+{
+  "product": {
+    "handle": "yun-karisimli-balik-sirti-orgu-kazak",
+    "title": "Yün Karışımlı Kazak - LMV",
+    "originalImageUrl": "https://cdn.myikas.com/images/73890197-276a-4750-9fc3-4f5d03175ec9/cc531503-1a83-4143-8382-fe2e92a32555/image_1950.webp"
+  },
+  "generatedImages": {
+    "originalUrl": "https://cdn.myikas.com/images/73890197-276a-4750-9fc3-4f5d03175ec9/cc531503-1a83-4143-8382-fe2e92a32555/image_1950.webp",
+    "generatedImages": [
+      "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759089892/product-images/yun-karisimli-balik-sirti-orgu-kazak/y_n_kar___ml__kazak_-_lmv_-_full_view_-_white_background_1759089889946.png",
+      "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759089897/product-images/yun-karisimli-balik-sirti-orgu-kazak/y_n_kar___ml__kazak_-_lmv_-_close-up_details_-_white_background_1759089894696.png"
+    ],
+    "metadata": {
+      "title": "Yün Karışımlı Kazak - LMV",
+      "handle": "yun-karisimli-balik-sirti-orgu-kazak",
+      "generatedCount": 2,
+      "photoshootScenes": [
+        {
+          "aesthetic": "French noir",
+          "setting": "A dimly lit, cobblestone Parisian alleyway at dusk, or the interior of a sophisticated, slightly worn Parisian cafe with large, rain-streaked windows. The backdrop features classic Art Deco architectural details or muted, atmospheric textures. The environment suggests a timeless, slightly melancholic solitude.",
+          "mood": "Intriguing, contemplative, and subtly elegant. The atmosphere is one of quiet drama, introspection, and sophisticated mystery, evoking a sense of film noir classicism with a modern, chic sensibility. A touch of melancholy and urban cool.",
+          "lighting": "High-contrast chiaroscuro lighting, with deep, dramatic shadows and selective illumination to highlight the model and the garment's texture. Light sources are sparse, perhaps from a distant streetlamp casting long shadows, or soft, diffused light filtering through heavy clouds or rain-streaked windows. A filmic quality with noticeable grain.",
+          "styling": "The LMV Latte Yün Karışımlı Kazak is paired with sleek dark brown leather trousers, echoing the original image, or alternatively, wide-leg charcoal grey wool trousers for a more understated noir look. Understated, natural makeup with a focus on a defined brow and a muted lip. Hair is styled in a classic, slightly undone manner – loose waves or a low, effortless chignon. Minimalist gold or silver hoop earrings. The model may wear vintage-inspired rectangular sunglasses (as in the original image) or a classic, structured leather handbag.",
+          "model_description": "The model embodies a quietly confident and enigmatic persona. Poses are natural yet deliberate, conveying introspection or a moment caught in thought. She might be leaning against a wall, gazing out of a rain-streaked window, or walking with a purposeful stride, hands subtly tucked into pockets or adjusting the sweater. Her expression is thoughtful, perhaps a slight furrow of the brow or a distant gaze, always hinting at a story beneath the surface.",
+          "composition": "The composition blends editorial polish with cinematic storytelling. A mix of close-ups emphasizing the sweater's 'balık sırtı' herringbone knit and soft texture, full-body shots showcasing its utility workwear silhouette against the dramatic setting, and medium shots capturing candid moments. Strong diagonal lines from architecture or shadows are utilized to add tension and depth. Low angles are employed for dramatic effect, and reflections in wet surfaces or windows add to the noir aesthetic. Framed through doorways or windows to create a voyeuristic feel. Shot with a 35mm analog grain and soft, vintage focus.",
+          "props": [
+            "Rain-streaked windowpanes",
+            "A single, classic Parisian streetlamp (blurred in background)",
+            "A vintage, dark leather handbag",
+            "An old-fashioned, simple black umbrella",
+            "A small, empty cafe table and chair (if cafe setting)",
+            "Cobblestone ground (if alleyway setting)",
+            "A classic, unadorned fedora or beret (optional, perhaps held or on a chair)"
+          ]
+        }
+      ],
+      "imageTypes": [
+        {
+          "type": "garment_full_view",
+          "url": "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759089892/product-images/yun-karisimli-balik-sirti-orgu-kazak/y_n_kar___ml__kazak_-_lmv_-_full_view_-_white_background_1759089889946.png",
+          "description": "Full garment view on white background"
+        },
+        {
+          "type": "garment_closeup",
+          "url": "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759089897/product-images/yun-karisimli-balik-sirti-orgu-kazak/y_n_kar___ml__kazak_-_lmv_-_close-up_details_-_white_background_1759089894696.png",
+          "description": "Close-up details on white background"
+        },
+        {
+          "type": "garment_angular",
+          "url": null,
+          "description": "Angular/folded view on white background"
+        },
+        {
+          "type": "styled_photoshoot_1",
+          "url": null,
+          "description": "Professional styled photoshoot - French noir",
+          "scene": {
+            "aesthetic": "French noir",
+            "setting": "A dimly lit, cobblestone Parisian alleyway at dusk, or the interior of a sophisticated, slightly worn Parisian cafe with large, rain-streaked windows. The backdrop features classic Art Deco architectural details or muted, atmospheric textures. The environment suggests a timeless, slightly melancholic solitude.",
+            "mood": "Intriguing, contemplative, and subtly elegant. The atmosphere is one of quiet drama, introspection, and sophisticated mystery, evoking a sense of film noir classicism with a modern, chic sensibility. A touch of melancholy and urban cool.",
+            "lighting": "High-contrast chiaroscuro lighting, with deep, dramatic shadows and selective illumination to highlight the model and the garment's texture. Light sources are sparse, perhaps from a distant streetlamp casting long shadows, or soft, diffused light filtering through heavy clouds or rain-streaked windows. A filmic quality with noticeable grain.",
+            "styling": "The LMV Latte Yün Karışımlı Kazak is paired with sleek dark brown leather trousers, echoing the original image, or alternatively, wide-leg charcoal grey wool trousers for a more understated noir look. Understated, natural makeup with a focus on a defined brow and a muted lip. Hair is styled in a classic, slightly undone manner – loose waves or a low, effortless chignon. Minimalist gold or silver hoop earrings. The model may wear vintage-inspired rectangular sunglasses (as in the original image) or a classic, structured leather handbag.",
+            "model_description": "The model embodies a quietly confident and enigmatic persona. Poses are natural yet deliberate, conveying introspection or a moment caught in thought. She might be leaning against a wall, gazing out of a rain-streaked window, or walking with a purposeful stride, hands subtly tucked into pockets or adjusting the sweater. Her expression is thoughtful, perhaps a slight furrow of the brow or a distant gaze, always hinting at a story beneath the surface.",
+            "composition": "The composition blends editorial polish with cinematic storytelling. A mix of close-ups emphasizing the sweater's 'balık sırtı' herringbone knit and soft texture, full-body shots showcasing its utility workwear silhouette against the dramatic setting, and medium shots capturing candid moments. Strong diagonal lines from architecture or shadows are utilized to add tension and depth. Low angles are employed for dramatic effect, and reflections in wet surfaces or windows add to the noir aesthetic. Framed through doorways or windows to create a voyeuristic feel. Shot with a 35mm analog grain and soft, vintage focus.",
+            "props": [
+              "Rain-streaked windowpanes",
+              "A single, classic Parisian streetlamp (blurred in background)",
+              "A vintage, dark leather handbag",
+              "An old-fashioned, simple black umbrella",
+              "A small, empty cafe table and chair (if cafe setting)",
+              "Cobblestone ground (if alleyway setting)",
+              "A classic, unadorned fedora or beret (optional, perhaps held or on a chair)"
+            ]
+          }
+        },
+        {
+          "type": "styled_photoshoot_2",
+          "url": null,
+          "description": "Professional styled photoshoot variation - French noir",
+          "scene": {
+            "aesthetic": "French noir",
+            "setting": "A dimly lit, cobblestone Parisian alleyway at dusk, or the interior of a sophisticated, slightly worn Parisian cafe with large, rain-streaked windows. The backdrop features classic Art Deco architectural details or muted, atmospheric textures. The environment suggests a timeless, slightly melancholic solitude.",
+            "mood": "Intriguing, contemplative, and subtly elegant. The atmosphere is one of quiet drama, introspection, and sophisticated mystery, evoking a sense of film noir classicism with a modern, chic sensibility. A touch of melancholy and urban cool.",
+            "lighting": "High-contrast chiaroscuro lighting, with deep, dramatic shadows and selective illumination to highlight the model and the garment's texture. Light sources are sparse, perhaps from a distant streetlamp casting long shadows, or soft, diffused light filtering through heavy clouds or rain-streaked windows. A filmic quality with noticeable grain.",
+            "styling": "The LMV Latte Yün Karışımlı Kazak is paired with sleek dark brown leather trousers, echoing the original image, or alternatively, wide-leg charcoal grey wool trousers for a more understated noir look. Understated, natural makeup with a focus on a defined brow and a muted lip. Hair is styled in a classic, slightly undone manner – loose waves or a low, effortless chignon. Minimalist gold or silver hoop earrings. The model may wear vintage-inspired rectangular sunglasses (as in the original image) or a classic, structured leather handbag.",
+            "model_description": "The model embodies a quietly confident and enigmatic persona. Poses are natural yet deliberate, conveying introspection or a moment caught in thought. She might be leaning against a wall, gazing out of a rain-streaked window, or walking with a purposeful stride, hands subtly tucked into pockets or adjusting the sweater. Her expression is thoughtful, perhaps a slight furrow of the brow or a distant gaze, always hinting at a story beneath the surface.",
+            "composition": "The composition blends editorial polish with cinematic storytelling. A mix of close-ups emphasizing the sweater's 'balık sırtı' herringbone knit and soft texture, full-body shots showcasing its utility workwear silhouette against the dramatic setting, and medium shots capturing candid moments. Strong diagonal lines from architecture or shadows are utilized to add tension and depth. Low angles are employed for dramatic effect, and reflections in wet surfaces or windows add to the noir aesthetic. Framed through doorways or windows to create a voyeuristic feel. Shot with a 35mm analog grain and soft, vintage focus.",
+            "props": [
+              "Rain-streaked windowpanes",
+              "A single, classic Parisian streetlamp (blurred in background)",
+              "A vintage, dark leather handbag",
+              "An old-fashioned, simple black umbrella",
+              "A small, empty cafe table and chair (if cafe setting)",
+              "Cobblestone ground (if alleyway setting)",
+              "A classic, unadorned fedora or beret (optional, perhaps held or on a chair)"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "timestamp": "2025-09-28T20:05:00.450Z"
+}

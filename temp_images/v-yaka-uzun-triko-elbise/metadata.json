@@ -1,0 +1,106 @@
+{
+  "product": {
+    "handle": "v-yaka-uzun-triko-elbise",
+    "title": "V Yaka Uzun Triko Elbise - LMV",
+    "originalImageUrl": "https://cdn.myikas.com/images/73890197-276a-4750-9fc3-4f5d03175ec9/a893eab9-44af-43b5-930c-55327fe0e35b/image_1950.webp"
+  },
+  "generatedImages": {
+    "originalUrl": "https://cdn.myikas.com/images/73890197-276a-4750-9fc3-4f5d03175ec9/a893eab9-44af-43b5-930c-55327fe0e35b/image_1950.webp",
+    "generatedImages": [
+      "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759090167/product-images/v-yaka-uzun-triko-elbise/v_yaka_uzun_triko_elbise_-_lmv_-_full_view_-_white_background_1759090166190.png",
+      "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759090171/product-images/v-yaka-uzun-triko-elbise/v_yaka_uzun_triko_elbise_-_lmv_-_close-up_details_-_white_background_1759090169644.png",
+      "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759090173/product-images/v-yaka-uzun-triko-elbise/v_yaka_uzun_triko_elbise_-_lmv_-_angular_folded_view_-_white_background_1759090172774.png",
+      "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759090177/product-images/v-yaka-uzun-triko-elbise/v_yaka_uzun_triko_elbise_-_lmv_-_styled_photoshoot_scene_1_1759090174753.png",
+      "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759090183/product-images/v-yaka-uzun-triko-elbise/v_yaka_uzun_triko_elbise_-_lmv_-_styled_photoshoot_scene_2_1759090180256.png"
+    ],
+    "metadata": {
+      "title": "V Yaka Uzun Triko Elbise - LMV",
+      "handle": "v-yaka-uzun-triko-elbise",
+      "generatedCount": 5,
+      "photoshootScenes": [
+        {
+          "aesthetic": "Victorian/Edwardian Inspired, high-fashion editorial",
+          "setting": "The grand, slightly faded drawing-room or library of a historic manor house, featuring tall arched windows, ornate dark wood paneling, and aged, plush velvet furnishings. The atmosphere is one of quiet grandeur and timeless elegance, hinting at forgotten stories and reflective moments.",
+          "mood": "Intimate, contemplative, and gracefully melancholic, infused with a sense of timeless elegance and subtle romanticism. The overall atmosphere is artful and serene, evoking a quiet nostalgia.",
+          "lighting": "Soft, diffused natural light filtering through tall, sheer-curtained windows, casting gentle indoor shadows. The light is painterly, creating a chiaroscuro effect that highlights the texture of the knit dress and the depth of the environment. A subtle, soft focus with visible 35mm analog film grain and a vintage finish enhances the timeless quality.",
+          "styling": "The black V-neck ribbed knit dress is paired with a delicate, thin leather belt in a dark, muted tone to define the waist. Accessories are minimalist but period-appropriate: a simple velvet ribbon choker with a small silver locket, and small pearl stud earrings. Hair is styled in soft, loose waves or a low, elegant chignon with a few face-framing tendrils. Makeup is natural and subtle, enhancing the model's features without being overtly modern. Elegant, low-heeled black leather ankle boots or classic, pointed-toe flats complete the look.",
+          "model_description": "The model embodies a graceful and thoughtful demeanor. Poses are natural and unforced, suggesting moments of quiet reflection. Shots include her seated elegantly by a window, gazing thoughtfully into the distance; walking slowly through the room, allowing the dress's hem to gently sway; standing with a hand resting lightly on a book or a piece of antique furniture; and a close-up of her hand adjusting the simple belt or touching the ribbed fabric, showcasing its texture. Her expression is serene and contemplative, never direct to the camera.",
+          "composition": "A mix of wide, atmospheric shots establishing the setting, medium shots capturing interaction with props, and intimate close-ups of the garment details. Compositions utilize classical framing, often employing leading lines from architectural elements or furniture to draw the eye to the model and dress. Soft focus on the background and foreground elements helps to isolate the subject. Shots are carefully composed to create a cinematic feel, emphasizing the flow and silhouette of the V-neck knit dress against the rich, muted tones of the Victorian-inspired backdrop. The 35mm analog grain adds a tangible, textured quality to each image.",
+          "props": [
+            "Ornate antique wooden armchair",
+            "Stack of leather-bound vintage books",
+            "Large, sheer-curtained arched window",
+            "Delicate antique silver locket on a velvet ribbon choker",
+            "Simple thin dark leather belt",
+            "Single long-stemmed, slightly faded rose in a slender vase",
+            "Small, intricately carved wooden side table"
+          ]
+        }
+      ],
+      "imageTypes": [
+        {
+          "type": "garment_full_view",
+          "url": "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759090167/product-images/v-yaka-uzun-triko-elbise/v_yaka_uzun_triko_elbise_-_lmv_-_full_view_-_white_background_1759090166190.png",
+          "description": "Full garment view on white background"
+        },
+        {
+          "type": "garment_closeup",
+          "url": "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759090171/product-images/v-yaka-uzun-triko-elbise/v_yaka_uzun_triko_elbise_-_lmv_-_close-up_details_-_white_background_1759090169644.png",
+          "description": "Close-up details on white background"
+        },
+        {
+          "type": "garment_angular",
+          "url": "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759090173/product-images/v-yaka-uzun-triko-elbise/v_yaka_uzun_triko_elbise_-_lmv_-_angular_folded_view_-_white_background_1759090172774.png",
+          "description": "Angular/folded view on white background"
+        },
+        {
+          "type": "styled_photoshoot_1",
+          "url": "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759090177/product-images/v-yaka-uzun-triko-elbise/v_yaka_uzun_triko_elbise_-_lmv_-_styled_photoshoot_scene_1_1759090174753.png",
+          "description": "Professional styled photoshoot - Victorian/Edwardian Inspired, high-fashion editorial",
+          "scene": {
+            "aesthetic": "Victorian/Edwardian Inspired, high-fashion editorial",
+            "setting": "The grand, slightly faded drawing-room or library of a historic manor house, featuring tall arched windows, ornate dark wood paneling, and aged, plush velvet furnishings. The atmosphere is one of quiet grandeur and timeless elegance, hinting at forgotten stories and reflective moments.",
+            "mood": "Intimate, contemplative, and gracefully melancholic, infused with a sense of timeless elegance and subtle romanticism. The overall atmosphere is artful and serene, evoking a quiet nostalgia.",
+            "lighting": "Soft, diffused natural light filtering through tall, sheer-curtained windows, casting gentle indoor shadows. The light is painterly, creating a chiaroscuro effect that highlights the texture of the knit dress and the depth of the environment. A subtle, soft focus with visible 35mm analog film grain and a vintage finish enhances the timeless quality.",
+            "styling": "The black V-neck ribbed knit dress is paired with a delicate, thin leather belt in a dark, muted tone to define the waist. Accessories are minimalist but period-appropriate: a simple velvet ribbon choker with a small silver locket, and small pearl stud earrings. Hair is styled in soft, loose waves or a low, elegant chignon with a few face-framing tendrils. Makeup is natural and subtle, enhancing the model's features without being overtly modern. Elegant, low-heeled black leather ankle boots or classic, pointed-toe flats complete the look.",
+            "model_description": "The model embodies a graceful and thoughtful demeanor. Poses are natural and unforced, suggesting moments of quiet reflection. Shots include her seated elegantly by a window, gazing thoughtfully into the distance; walking slowly through the room, allowing the dress's hem to gently sway; standing with a hand resting lightly on a book or a piece of antique furniture; and a close-up of her hand adjusting the simple belt or touching the ribbed fabric, showcasing its texture. Her expression is serene and contemplative, never direct to the camera.",
+            "composition": "A mix of wide, atmospheric shots establishing the setting, medium shots capturing interaction with props, and intimate close-ups of the garment details. Compositions utilize classical framing, often employing leading lines from architectural elements or furniture to draw the eye to the model and dress. Soft focus on the background and foreground elements helps to isolate the subject. Shots are carefully composed to create a cinematic feel, emphasizing the flow and silhouette of the V-neck knit dress against the rich, muted tones of the Victorian-inspired backdrop. The 35mm analog grain adds a tangible, textured quality to each image.",
+            "props": [
+              "Ornate antique wooden armchair",
+              "Stack of leather-bound vintage books",
+              "Large, sheer-curtained arched window",
+              "Delicate antique silver locket on a velvet ribbon choker",
+              "Simple thin dark leather belt",
+              "Single long-stemmed, slightly faded rose in a slender vase",
+              "Small, intricately carved wooden side table"
+            ]
+          }
+        },
+        {
+          "type": "styled_photoshoot_2",
+          "url": "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759090183/product-images/v-yaka-uzun-triko-elbise/v_yaka_uzun_triko_elbise_-_lmv_-_styled_photoshoot_scene_2_1759090180256.png",
+          "description": "Professional styled photoshoot variation - Victorian/Edwardian Inspired, high-fashion editorial",
+          "scene": {
+            "aesthetic": "Victorian/Edwardian Inspired, high-fashion editorial",
+            "setting": "The grand, slightly faded drawing-room or library of a historic manor house, featuring tall arched windows, ornate dark wood paneling, and aged, plush velvet furnishings. The atmosphere is one of quiet grandeur and timeless elegance, hinting at forgotten stories and reflective moments.",
+            "mood": "Intimate, contemplative, and gracefully melancholic, infused with a sense of timeless elegance and subtle romanticism. The overall atmosphere is artful and serene, evoking a quiet nostalgia.",
+            "lighting": "Soft, diffused natural light filtering through tall, sheer-curtained windows, casting gentle indoor shadows. The light is painterly, creating a chiaroscuro effect that highlights the texture of the knit dress and the depth of the environment. A subtle, soft focus with visible 35mm analog film grain and a vintage finish enhances the timeless quality.",
+            "styling": "The black V-neck ribbed knit dress is paired with a delicate, thin leather belt in a dark, muted tone to define the waist. Accessories are minimalist but period-appropriate: a simple velvet ribbon choker with a small silver locket, and small pearl stud earrings. Hair is styled in soft, loose waves or a low, elegant chignon with a few face-framing tendrils. Makeup is natural and subtle, enhancing the model's features without being overtly modern. Elegant, low-heeled black leather ankle boots or classic, pointed-toe flats complete the look.",
+            "model_description": "The model embodies a graceful and thoughtful demeanor. Poses are natural and unforced, suggesting moments of quiet reflection. Shots include her seated elegantly by a window, gazing thoughtfully into the distance; walking slowly through the room, allowing the dress's hem to gently sway; standing with a hand resting lightly on a book or a piece of antique furniture; and a close-up of her hand adjusting the simple belt or touching the ribbed fabric, showcasing its texture. Her expression is serene and contemplative, never direct to the camera.",
+            "composition": "A mix of wide, atmospheric shots establishing the setting, medium shots capturing interaction with props, and intimate close-ups of the garment details. Compositions utilize classical framing, often employing leading lines from architectural elements or furniture to draw the eye to the model and dress. Soft focus on the background and foreground elements helps to isolate the subject. Shots are carefully composed to create a cinematic feel, emphasizing the flow and silhouette of the V-neck knit dress against the rich, muted tones of the Victorian-inspired backdrop. The 35mm analog grain adds a tangible, textured quality to each image.",
+            "props": [
+              "Ornate antique wooden armchair",
+              "Stack of leather-bound vintage books",
+              "Large, sheer-curtained arched window",
+              "Delicate antique silver locket on a velvet ribbon choker",
+              "Simple thin dark leather belt",
+              "Single long-stemmed, slightly faded rose in a slender vase",
+              "Small, intricately carved wooden side table"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "timestamp": "2025-09-28T20:09:45.413Z"
+}
