@@ -1,0 +1,94 @@
+{
+  "product": {
+    "handle": "kasmir-karisimli-triko-esofman-takimi",
+    "title": "Kaşmir Karışımlı Eşofman Takımı - LMV",
+    "originalImageUrl": "https://cdn.myikas.com/images/73890197-276a-4750-9fc3-4f5d03175ec9/4cf2435a-4d8f-4bff-bd69-3d00487497d2/image_1950.webp"
+  },
+  "generatedImages": {
+    "originalUrl": "https://cdn.myikas.com/images/73890197-276a-4750-9fc3-4f5d03175ec9/4cf2435a-4d8f-4bff-bd69-3d00487497d2/image_1950.webp",
+    "generatedImages": [
+      "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759086969/product-images/kasmir-karisimli-triko-esofman-takimi/ka_mir_kar___ml__e_ofman_tak_m__-_lmv_-_full_view_-_white_background_1759086966676.png",
+      "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759086972/product-images/kasmir-karisimli-triko-esofman-takimi/ka_mir_kar___ml__e_ofman_tak_m__-_lmv_-_close-up_details_-_white_background_1759086970828.png",
+      "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759086977/product-images/kasmir-karisimli-triko-esofman-takimi/ka_mir_kar___ml__e_ofman_tak_m__-_lmv_-_styled_photoshoot_scene_1_1759086974138.png",
+      "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759086983/product-images/kasmir-karisimli-triko-esofman-takimi/ka_mir_kar___ml__e_ofman_tak_m__-_lmv_-_styled_photoshoot_scene_2_1759086979562.png"
+    ],
+    "metadata": {
+      "title": "Kaşmir Karışımlı Eşofman Takımı - LMV",
+      "handle": "kasmir-karisimli-triko-esofman-takimi",
+      "generatedCount": 4,
+      "photoshootScenes": [
+        {
+          "aesthetic": "Savile Row Bespoke",
+          "setting": "A meticulously appointed private fitting room on Savile Row, featuring dark wood paneling, rich leather armchairs, large ornate mirrors, and shelves lined with bolts of luxurious, high-quality wool and cashmere fabrics. The space exudes heritage, quiet luxury, and impeccable craftsmanship.",
+          "mood": "Sophisticated, discerning, quietly confident, and exquisitely refined. The atmosphere is one of understated opulence, conveying a sense of timeless elegance, intellectual depth, and serene exclusivity. There's a subtle defiance of traditional formality, embracing comfort without sacrificing class.",
+          "lighting": "Soft, diffused natural light filtering through tall, draped windows, augmented by warm, directional artificial lighting from elegant wall sconces and a brass desk lamp. This creates a gentle chiaroscuro effect, highlighting the texture of the cashmere blend while casting subtle, flattering shadows. The overall illumination is rich, inviting, and professional, emphasizing depth and quality.",
+          "styling": "The model's hair is styled in a sleek, low bun or a polished, softly structured bob, showcasing an elegant neck line. Makeup is minimalist and flawless: a perfect complexion, softly defined brows, a nude lip, and a subtle touch of mascara to enhance natural beauty. Accessories include a vintage, oversized gold or silver watch with a leather strap, a delicate string of pearls or simple diamond stud earrings, and a pair of impeccably polished, high-quality leather loafers or elegant ankle boots. A finely tailored, longline charcoal wool or cashmere overcoat is draped artfully over one shoulder or gently held.",
+          "model_description": "The model stands with an air of relaxed authority, one hand casually in the pocket of the tracksuit pants, the other gently resting on the lapel of the draped overcoat. Her posture is poised yet comfortable, conveying effortless sophistication. Her expression is thoughtful and self-assured, with a subtle, discerning gaze that meets the camera directly, emanating quiet intelligence and an appreciation for quality.",
+          "composition": "A medium-full shot captures the model and the detailed setting, emphasizing the luxurious fabric and the elegant drape of the tracksuit. The camera is positioned at eye level, perhaps slightly low to enhance stature, with the model framed slightly off-center according to the rule of thirds. The background elements (fabric bolts, wood paneling) are intentionally blurred with a shallow depth of field, directing focus to the model and the garment, yet hinting at the opulent surroundings.",
+          "props": [
+            "Bolts of luxurious fabrics (e.g., cashmere, fine wool, silk) in muted tones, artfully stacked on shelves or partially unfurled on a table.",
+            "A vintage, leather-bound volume or a collection of antique books, placed on a mahogany desk or an adjacent side table.",
+            "A sterling silver tailor's shears or a finely crafted measuring tape, subtly arranged on a work table, hinting at bespoke craftsmanship.",
+            "A classic dark wood valet stand with a crisp white dress shirt or a traditional tweed jacket hanging on it, offering a contrast to the relaxed cashmere.",
+            "A steaming cup of fine tea or coffee in an ornate porcelain cup and saucer, resting on a polished wooden surface."
+          ]
+        }
+      ],
+      "imageTypes": [
+        {
+          "type": "garment_full_view",
+          "url": "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759086969/product-images/kasmir-karisimli-triko-esofman-takimi/ka_mir_kar___ml__e_ofman_tak_m__-_lmv_-_full_view_-_white_background_1759086966676.png",
+          "description": "Full garment view on white background"
+        },
+        {
+          "type": "garment_closeup",
+          "url": "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759086972/product-images/kasmir-karisimli-triko-esofman-takimi/ka_mir_kar___ml__e_ofman_tak_m__-_lmv_-_close-up_details_-_white_background_1759086970828.png",
+          "description": "Close-up details on white background"
+        },
+        {
+          "type": "styled_photoshoot_1",
+          "url": "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759086977/product-images/kasmir-karisimli-triko-esofman-takimi/ka_mir_kar___ml__e_ofman_tak_m__-_lmv_-_styled_photoshoot_scene_1_1759086974138.png",
+          "description": "Professional styled photoshoot - Savile Row Bespoke",
+          "scene": {
+            "aesthetic": "Savile Row Bespoke",
+            "setting": "A meticulously appointed private fitting room on Savile Row, featuring dark wood paneling, rich leather armchairs, large ornate mirrors, and shelves lined with bolts of luxurious, high-quality wool and cashmere fabrics. The space exudes heritage, quiet luxury, and impeccable craftsmanship.",
+            "mood": "Sophisticated, discerning, quietly confident, and exquisitely refined. The atmosphere is one of understated opulence, conveying a sense of timeless elegance, intellectual depth, and serene exclusivity. There's a subtle defiance of traditional formality, embracing comfort without sacrificing class.",
+            "lighting": "Soft, diffused natural light filtering through tall, draped windows, augmented by warm, directional artificial lighting from elegant wall sconces and a brass desk lamp. This creates a gentle chiaroscuro effect, highlighting the texture of the cashmere blend while casting subtle, flattering shadows. The overall illumination is rich, inviting, and professional, emphasizing depth and quality.",
+            "styling": "The model's hair is styled in a sleek, low bun or a polished, softly structured bob, showcasing an elegant neck line. Makeup is minimalist and flawless: a perfect complexion, softly defined brows, a nude lip, and a subtle touch of mascara to enhance natural beauty. Accessories include a vintage, oversized gold or silver watch with a leather strap, a delicate string of pearls or simple diamond stud earrings, and a pair of impeccably polished, high-quality leather loafers or elegant ankle boots. A finely tailored, longline charcoal wool or cashmere overcoat is draped artfully over one shoulder or gently held.",
+            "model_description": "The model stands with an air of relaxed authority, one hand casually in the pocket of the tracksuit pants, the other gently resting on the lapel of the draped overcoat. Her posture is poised yet comfortable, conveying effortless sophistication. Her expression is thoughtful and self-assured, with a subtle, discerning gaze that meets the camera directly, emanating quiet intelligence and an appreciation for quality.",
+            "composition": "A medium-full shot captures the model and the detailed setting, emphasizing the luxurious fabric and the elegant drape of the tracksuit. The camera is positioned at eye level, perhaps slightly low to enhance stature, with the model framed slightly off-center according to the rule of thirds. The background elements (fabric bolts, wood paneling) are intentionally blurred with a shallow depth of field, directing focus to the model and the garment, yet hinting at the opulent surroundings.",
+            "props": [
+              "Bolts of luxurious fabrics (e.g., cashmere, fine wool, silk) in muted tones, artfully stacked on shelves or partially unfurled on a table.",
+              "A vintage, leather-bound volume or a collection of antique books, placed on a mahogany desk or an adjacent side table.",
+              "A sterling silver tailor's shears or a finely crafted measuring tape, subtly arranged on a work table, hinting at bespoke craftsmanship.",
+              "A classic dark wood valet stand with a crisp white dress shirt or a traditional tweed jacket hanging on it, offering a contrast to the relaxed cashmere.",
+              "A steaming cup of fine tea or coffee in an ornate porcelain cup and saucer, resting on a polished wooden surface."
+            ]
+          }
+        },
+        {
+          "type": "styled_photoshoot_2",
+          "url": "https://res.cloudinary.com/dyylsk3s6/image/upload/v1759086983/product-images/kasmir-karisimli-triko-esofman-takimi/ka_mir_kar___ml__e_ofman_tak_m__-_lmv_-_styled_photoshoot_scene_2_1759086979562.png",
+          "description": "Professional styled photoshoot variation - Savile Row Bespoke",
+          "scene": {
+            "aesthetic": "Savile Row Bespoke",
+            "setting": "A meticulously appointed private fitting room on Savile Row, featuring dark wood paneling, rich leather armchairs, large ornate mirrors, and shelves lined with bolts of luxurious, high-quality wool and cashmere fabrics. The space exudes heritage, quiet luxury, and impeccable craftsmanship.",
+            "mood": "Sophisticated, discerning, quietly confident, and exquisitely refined. The atmosphere is one of understated opulence, conveying a sense of timeless elegance, intellectual depth, and serene exclusivity. There's a subtle defiance of traditional formality, embracing comfort without sacrificing class.",
+            "lighting": "Soft, diffused natural light filtering through tall, draped windows, augmented by warm, directional artificial lighting from elegant wall sconces and a brass desk lamp. This creates a gentle chiaroscuro effect, highlighting the texture of the cashmere blend while casting subtle, flattering shadows. The overall illumination is rich, inviting, and professional, emphasizing depth and quality.",
+            "styling": "The model's hair is styled in a sleek, low bun or a polished, softly structured bob, showcasing an elegant neck line. Makeup is minimalist and flawless: a perfect complexion, softly defined brows, a nude lip, and a subtle touch of mascara to enhance natural beauty. Accessories include a vintage, oversized gold or silver watch with a leather strap, a delicate string of pearls or simple diamond stud earrings, and a pair of impeccably polished, high-quality leather loafers or elegant ankle boots. A finely tailored, longline charcoal wool or cashmere overcoat is draped artfully over one shoulder or gently held.",
+            "model_description": "The model stands with an air of relaxed authority, one hand casually in the pocket of the tracksuit pants, the other gently resting on the lapel of the draped overcoat. Her posture is poised yet comfortable, conveying effortless sophistication. Her expression is thoughtful and self-assured, with a subtle, discerning gaze that meets the camera directly, emanating quiet intelligence and an appreciation for quality.",
+            "composition": "A medium-full shot captures the model and the detailed setting, emphasizing the luxurious fabric and the elegant drape of the tracksuit. The camera is positioned at eye level, perhaps slightly low to enhance stature, with the model framed slightly off-center according to the rule of thirds. The background elements (fabric bolts, wood paneling) are intentionally blurred with a shallow depth of field, directing focus to the model and the garment, yet hinting at the opulent surroundings.",
+            "props": [
+              "Bolts of luxurious fabrics (e.g., cashmere, fine wool, silk) in muted tones, artfully stacked on shelves or partially unfurled on a table.",
+              "A vintage, leather-bound volume or a collection of antique books, placed on a mahogany desk or an adjacent side table.",
+              "A sterling silver tailor's shears or a finely crafted measuring tape, subtly arranged on a work table, hinting at bespoke craftsmanship.",
+              "A classic dark wood valet stand with a crisp white dress shirt or a traditional tweed jacket hanging on it, offering a contrast to the relaxed cashmere.",
+              "A steaming cup of fine tea or coffee in an ornate porcelain cup and saucer, resting on a polished wooden surface."
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "timestamp": "2025-09-28T19:16:25.367Z"
+}
