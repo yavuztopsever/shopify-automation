@@ -6,7 +6,10 @@
   "scripts": {
     "build": "tsc",
     "automation": "ts-node simple-automation.ts",
+    "automation:test": "ts-node simple-automation.ts --test --max-garments 1",
+    "automation:limited": "ts-node simple-automation.ts --max-garments 5",
     "generate-images": "ts-node run-image-generator.ts",
+    "test-integration": "ts-node test-integration.ts",
     "clean": "rimraf dist"
   },
   "keywords": [

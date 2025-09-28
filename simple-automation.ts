@@ -10,6 +10,7 @@ import csv from 'csv-parser';
 import { createObjectCsvWriter } from 'csv-writer';
 import OpenAI from 'openai';
 import 'dotenv/config';
+import { ImageGenerationService, GeneratedImageUrls } from './image-generation-service';
 
 // Simple interfaces
 interface SourceProduct {
@@ -106,6 +107,8 @@ class LMVAutomation {
   private errorCount = 0;
   private productGroups = new Map<string, SourceProduct[]>();
   private htmlTemplate: string;
+  private imageGenerationService: ImageGenerationService;
+  private generatedImageUrls = new Map<string, GeneratedImageUrls>();
 
   constructor() {
     this.openai = new OpenAI({
@@ -114,9 +117,12 @@ class LMVAutomation {
     
     // Load simplified HTML template
     this.htmlTemplate = fs.readFileSync('lmv-simple-template.html', 'utf8');
+    
+    // Initialize image generation service
+    this.imageGenerationService = new ImageGenerationService();
   }
 
-  async run(testMode = false) {
+  async run(testMode = false, maxGarments?: number) {
     console.log('🚀 Starting LMV Shopify Automation - Avant-garde • Chic • Timeless');
     
     try {
@@ -128,14 +134,28 @@ class LMVAutomation {
       this.groupProducts(products);
       console.log(`🔗 Found ${this.productGroups.size} unique products`);
 
-      // Process products (limit to 10 in test mode)
-      const toProcess = testMode ? products.slice(0, 10) : products;
+      // Limit unique garments if specified
+      let uniqueGarmentIds = Array.from(this.productGroups.keys());
+      if (maxGarments && maxGarments > 0) {
+        uniqueGarmentIds = uniqueGarmentIds.slice(0, maxGarments);
+        console.log(`🎯 Processing limited to ${maxGarments} unique garments`);
+      }
+
+      // Filter products to only include the selected garments
+      const toProcess = testMode 
+        ? products.slice(0, 10) 
+        : products.filter(p => uniqueGarmentIds.includes(p['Ürün Grup ID']));
+      
+      console.log(`📋 Processing ${toProcess.length} product variants from ${uniqueGarmentIds.length} unique garments`);
+
+      // Process products with image generation
       const shopifyProducts = await this.processProducts(toProcess);
 
       // Write output
       await this.writeShopifyCSV(shopifyProducts);
       
       console.log(`✅ Complete! Processed ${this.processedCount} products, ${this.errorCount} errors`);
+      console.log(`🎨 Generated images for ${this.generatedImageUrls.size} unique garments`);
       
     } catch (error) {
       console.error('❌ Fatal error:', error);
@@ -173,12 +193,36 @@ class LMVAutomation {
       console.log(`⚡ Processing ${i + 1}/${products.length}: ${product['İsim']}`);
       
       try {
-        // Enhance content with GPT-5
+        // Enhance content with GPT-4
         const enhanced = await this.enhanceContent(product);
         
-        // Convert to Shopify format
-        const shopifyProduct = this.mapToShopify(product, enhanced);
-        shopifyProducts.push(shopifyProduct);
+        // Generate images for unique garments only (first variant of each group)
+        const garmentId = product['Ürün Grup ID'];
+        if (this.isFirstVariantOfGroup(product) && !this.generatedImageUrls.has(garmentId)) {
+          console.log(`🎨 Generating images for unique garment: ${garmentId}`);
+          console.log(`📝 Using enhanced content: "${enhanced.title}" with ${enhanced.aestheticStyle} aesthetic`);
+          
+          try {
+            const imageResult = await this.imageGenerationService.generateImagesForGarment(
+              garmentId,
+              product,
+              enhanced // Pass the enhanced content from GPT-4
+            );
+            
+            if (imageResult.success && imageResult.imageUrls) {
+              this.generatedImageUrls.set(garmentId, imageResult.imageUrls);
+              console.log(`✅ Generated images for garment ${garmentId} using enhanced content`);
+            } else {
+              console.warn(`⚠️ Failed to generate images for garment ${garmentId}: ${imageResult.error}`);
+            }
+          } catch (imageError) {
+            console.error(`❌ Image generation error for ${garmentId}:`, imageError);
+          }
+        }
+        
+        // Convert to Shopify format - this will create multiple rows for images
+        const shopifyProductRows = this.mapToShopifyWithImages(product, enhanced);
+        shopifyProducts.push(...shopifyProductRows);
         
         this.processedCount++;
         
@@ -190,8 +234,8 @@ class LMVAutomation {
         this.errorCount++;
         
         // Add with original content as fallback
-        const shopifyProduct = this.mapToShopify(product, this.createFallbackContent(product));
-        shopifyProducts.push(shopifyProduct);
+        const shopifyProductRows = this.mapToShopifyWithImages(product, this.createFallbackContent(product));
+        shopifyProducts.push(...shopifyProductRows);
       }
     }
     
@@ -311,7 +355,7 @@ JSON ÇIKTI:
     return html;
   }
 
-  private mapToShopify(product: SourceProduct, enhanced: EnhancedContent): ShopifyProduct {
+  private mapToShopifyWithImages(product: SourceProduct, enhanced: EnhancedContent): ShopifyProduct[] {
     const isFirstVariant = this.isFirstVariantOfGroup(product);
     const handle = this.generateHandle(product['Slug'] || enhanced.title);
     const imageUrls = product['Resim URL'].split(';').filter(url => url.trim());
@@ -320,11 +364,18 @@ JSON ÇIKTI:
     // Generate styled HTML body using template
     const bodyHTML = isFirstVariant ? this.parseContentToHTML(enhanced) : '';
     
-    return {
+    // Get generated images for this garment
+    const garmentId = product['Ürün Grup ID'];
+    const generatedImages = this.generatedImageUrls.get(garmentId);
+    
+    const rows: ShopifyProduct[] = [];
+    
+    // Main product row (first variant only gets full product data)
+    const mainProduct: ShopifyProduct = {
       Handle: handle,
       Title: isFirstVariant ? enhanced.title : '',
       'Body (HTML)': bodyHTML,
-      Vendor: isFirstVariant ? 'LMV' : '', // Updated to LMV brand
+      Vendor: isFirstVariant ? 'LMV' : '',
       'Product Category': isFirstVariant ? this.mapCategory(product['Kategoriler']) : '',
       Type: isFirstVariant ? 'Physical' : '',
       Tags: isFirstVariant ? enhanced.tags : '',
@@ -348,7 +399,7 @@ JSON ÇIKTI:
       'Variant Barcode': '',
       'Image Src': isFirstVariant && firstImage ? firstImage : '',
       'Image Position': isFirstVariant && firstImage ? 1 : 0,
-      'Image Alt Text': isFirstVariant ? enhanced.title : '',
+      'Image Alt Text': isFirstVariant && firstImage ? enhanced.title : '',
       'Gift Card': false,
       'SEO Title': isFirstVariant ? enhanced.metaTitle : '',
       'SEO Description': isFirstVariant ? enhanced.metaDescription : '',
@@ -362,6 +413,73 @@ JSON ÇIKTI:
       'Variant Weight Unit': 'kg',
       'Status': 'active'
     };
+    
+    rows.push(mainProduct);
+    
+    // Add additional image rows if this is the first variant and we have generated images
+    if (isFirstVariant && generatedImages) {
+      let imagePosition = 2; // Start from position 2 (original is position 1)
+      
+      // Create image-only rows for each generated image
+      const imageData = [
+        { url: generatedImages.garmentFull, alt: `${enhanced.title} - Full View` },
+        { url: generatedImages.garmentCloseup, alt: `${enhanced.title} - Close-up Details` },
+        { url: generatedImages.garmentAngular, alt: `${enhanced.title} - Angular View` },
+        { url: generatedImages.photoshoot1, alt: `${enhanced.title} - Styled Photoshoot` },
+        { url: generatedImages.photoshoot2, alt: `${enhanced.title} - Styled Photoshoot Variation` }
+      ];
+      
+      for (const imageInfo of imageData) {
+        if (imageInfo.url) {
+          const imageRow: ShopifyProduct = {
+            Handle: handle,
+            Title: '',
+            'Body (HTML)': '',
+            Vendor: '',
+            'Product Category': '',
+            Type: '',
+            Tags: '',
+            Published: false,
+            'Option1 Name': '',
+            'Option1 Value': '',
+            'Option2 Name': '',
+            'Option2 Value': '',
+            'Option3 Name': '',
+            'Option3 Value': '',
+            'Variant SKU': '',
+            'Variant Grams': '',
+            'Variant Inventory Tracker': '',
+            'Variant Inventory Qty': 0,
+            'Variant Inventory Policy': '',
+            'Variant Fulfillment Service': '',
+            'Variant Price': '',
+            'Variant Compare At Price': '',
+            'Variant Requires Shipping': false,
+            'Variant Taxable': false,
+            'Variant Barcode': '',
+            'Image Src': imageInfo.url,
+            'Image Position': imagePosition++,
+            'Image Alt Text': imageInfo.alt,
+            'Gift Card': false,
+            'SEO Title': '',
+            'SEO Description': '',
+            'Google Shopping / Google Product Category': '',
+            'Google Shopping / Gender': '',
+            'Google Shopping / Age Group': '',
+            'Google Shopping / MPN': '',
+            'Google Shopping / Condition': '',
+            'Google Shopping / Custom Product': false,
+            'Variant Image': '',
+            'Variant Weight Unit': '',
+            'Status': ''
+          };
+          
+          rows.push(imageRow);
+        }
+      }
+    }
+    
+    return rows;
   }
 
   private isFirstVariantOfGroup(product: SourceProduct): boolean {
@@ -441,15 +559,60 @@ JSON ÇIKTI:
     });
 
     await csvWriter.writeRecords(products);
-    console.log(`📄 Generated Shopify CSV with ${products.length} products`);
+    console.log(`📄 Generated Shopify CSV with ${products.length} rows (including image rows)`);
   }
 }
 
-// Run the LMV automation
-const automation = new LMVAutomation();
-const testMode = process.argv.includes('--test');
+// Parse command line arguments
+function parseArguments() {
+  const args = process.argv.slice(2);
+  let testMode = false;
+  let maxGarments: number | undefined;
 
-automation.run(testMode).catch(error => {
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    
+    if (arg === '--test') {
+      testMode = true;
+    } else if (arg === '--max-garments' || arg === '-m') {
+      const nextArg = args[i + 1];
+      if (nextArg && !isNaN(parseInt(nextArg))) {
+        maxGarments = parseInt(nextArg);
+        i++; // Skip the next argument since we consumed it
+      } else {
+        console.error('❌ --max-garments requires a number argument');
+        process.exit(1);
+      }
+    } else if (arg === '--help' || arg === '-h') {
+      console.log(`
+🚀 LMV Shopify Automation with AI Image Generation
+
+Usage: ts-node simple-automation.ts [options]
+
+Options:
+  --test                Run in test mode (process only 10 products)
+  --max-garments, -m    Limit the number of unique garments to process
+  --help, -h           Show this help message
+
+Examples:
+  ts-node simple-automation.ts --test
+  ts-node simple-automation.ts --max-garments 5
+  ts-node simple-automation.ts -m 3 --test
+      `);
+      process.exit(0);
+    }
+  }
+
+  return { testMode, maxGarments };
+}
+
+// Run the LMV automation
+const { testMode, maxGarments } = parseArguments();
+const automation = new LMVAutomation();
+
+console.log(`🎯 Configuration: Test Mode: ${testMode}, Max Garments: ${maxGarments || 'unlimited'}`);
+
+automation.run(testMode, maxGarments).catch(error => {
   console.error('💥 LMV Automation failed:', error);
   process.exit(1);
 });

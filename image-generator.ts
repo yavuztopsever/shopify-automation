@@ -231,9 +231,16 @@ Professional photography quality with natural lighting, accurate colors, and rea
     const title = product.Title;
     const color = product['Option2 Value'] || '';
     const description = product['Body (HTML)']?.replace(/<[^>]*>/g, '') || '';
-    const materialInfo = this.extractMaterialInfo(title, description);
+    
+    // Use enhanced content if available
+    const enhancedContent = (product as any)._enhancedContent;
+    const materialInfo = enhancedContent?.materialInfo || this.extractMaterialInfo(title, description);
+    const mainDescription = enhancedContent?.mainDescription || description;
 
     return `Create a professional product photograph of the ${title} in ${color} color floating against a pure white background.
+
+**Product Context:**
+${mainDescription}
 
 **Full Garment View Requirements:**
 - Complete long shot showing the entire garment from top to bottom
@@ -253,9 +260,16 @@ The garment should appear naturally draped under its own weight, displaying the 
     const title = product.Title;
     const color = product['Option2 Value'] || '';
     const description = product['Body (HTML)']?.replace(/<[^>]*>/g, '') || '';
-    const materialInfo = this.extractMaterialInfo(title, description);
+    
+    // Use enhanced content if available
+    const enhancedContent = (product as any)._enhancedContent;
+    const materialInfo = enhancedContent?.materialInfo || this.extractMaterialInfo(title, description);
+    const mainDescription = enhancedContent?.mainDescription || description;
 
     return `Create a detailed close-up product photograph focusing on specific details of the ${title} in ${color} color against a pure white background.
+
+**Product Context:**
+${mainDescription}
 
 **Close-Up Detail Requirements:**
 - Tight crop focusing on fabric texture, stitching, and construction details
@@ -274,9 +288,16 @@ Focus on showcasing the quality and craftsmanship through detailed close-up shot
     const title = product.Title;
     const color = product['Option2 Value'] || '';
     const description = product['Body (HTML)']?.replace(/<[^>]*>/g, '') || '';
-    const materialInfo = this.extractMaterialInfo(title, description);
+    
+    // Use enhanced content if available
+    const enhancedContent = (product as any)._enhancedContent;
+    const materialInfo = enhancedContent?.materialInfo || this.extractMaterialInfo(title, description);
+    const mainDescription = enhancedContent?.mainDescription || description;
 
     return `Create a professional product photograph of the ${title} in ${color} color in an artistic angular or folded presentation against a pure white background.
+
+**Product Context:**
+${mainDescription}
 
 **Angular/Folded View Requirements:**
 - Garment artistically folded, laid flat, or positioned at an interesting angle
@@ -315,24 +336,33 @@ Present the garment in an artistic, angular, or folded arrangement that shows it
     const color = product['Option2 Value'] || '';
     const tags = product.Tags;
     const description = product['Body (HTML)'].replace(/<[^>]*>/g, ''); // Strip HTML
+    
+    // Extract enhanced content if available
+    const enhancedContent = (product as any)._enhancedContent;
+    const aestheticStyle = enhancedContent?.aestheticStyle || 'Minimalist Modern';
+    const materialInfo = enhancedContent?.materialInfo || '';
+    const styleStory = enhancedContent?.styleStory || '';
+    const mainDescription = enhancedContent?.mainDescription || description;
 
-    // Expanded list of vintage and timeless aesthetics
-    const aestheticStyles = [
-      // Original aesthetics
-      'Boho', '60s housewife', '60s LA', 'Woodstock', 'French new wave', 'French noir', 'Old money',
-      'Beatnik Chic', 'Ivy League/Preppy', 'Utility/Workwear', 'Hollywood Glamour (Golden Age)',
-      'Safari/Explorer', 'Minimalist Modern', 'Art Deco Elegance', 'Sporty Luxe', 'Gothic Romance',
-      'Victorian/Edwardian Inspired', 'Rocker/Rebel', 'Nautical', 'Western/Cowboy', 'Flapper (1920s)',
-      'Mod (Mid-60s British)', 'Cottagecore', 'Androgynous Tailoring', 'Punk (Early)',
-      'Savile Row Bespoke', 'Mediterranean Resort',
-      // 10 additional vintage/timeless aesthetics
-      'Italian Riviera (1950s)', 'Parisian Atelier', 'English Country Estate', 'New York Socialite (1940s)',
-      'Scandinavian Hygge', 'Japanese Minimalism', 'Russian Ballet', 'Moroccan Bohemian',
-      'Swiss Alpine Chic', 'Cuban Havana (1950s)'
-    ];
-
-    // Randomly select ONE aesthetic for this product
-    const selectedAesthetic = aestheticStyles[Math.floor(Math.random() * aestheticStyles.length)];
+    // Use the aesthetic from enhanced content if available, otherwise select randomly
+    let selectedAesthetic = aestheticStyle;
+    
+    // If no enhanced aesthetic or it's generic, select from expanded list
+    if (!selectedAesthetic || selectedAesthetic === 'Minimalist Modern') {
+      const aestheticStyles = [
+        // Original aesthetics
+        'Boho', '60s housewife', '60s LA', 'Woodstock', 'French new wave', 'French noir', 'Old money',
+        'Beatnik Chic', 'Ivy League/Preppy', 'Hollywood Glamour (Golden Age)',
+        'Safari/Explorer', 'Art Deco Elegance','Gothic Romance',
+        'Victorian/Edwardian Inspired','Nautical', 'Western/Cowboy', 'Flapper (1920s)',
+        'Mod (Mid-60s British)', 'Cottagecore', 'Androgynous Tailoring',
+        'Savile Row Bespoke', 'Mediterranean Resort',
+        'Italian Riviera (1950s)', 'Parisian Atelier', 'English Country Estate', 'New York Socialite (1940s)',
+        'Scandinavian Hygge', 'Japanese Minimalism', 'Russian Ballet', 'Moroccan Bohemian',
+        'Swiss Alpine Chic', 'Cuban Havana (1950s)'
+      ];
+      selectedAesthetic = aestheticStyles[Math.floor(Math.random() * aestheticStyles.length)];
+    }
 
     console.log(`🎨 Selected aesthetic: ${selectedAesthetic} for ${title}`);
 
@@ -343,8 +373,11 @@ ${selectedAesthetic}
 
 ### 👗 FOCUS GARMENT
 **Garment:** ${title} in ${color} color
+- Enhanced Description: ${mainDescription}
+- Material: ${materialInfo}
+- Style Story: ${styleStory}
 - Style characteristics: ${tags}
-- Description: ${description}
+- Original Description: ${description}
 
 ---
 
@@ -473,6 +506,12 @@ Analyze the provided garment image and create a detailed photoshoot concept that
   private createPhotoshootPrompt(product: Product, scene: PhotoshootScene): string {
     const title = product.Title;
     const color = product['Option2 Value'] || '';
+    
+    // Use enhanced content if available
+    const enhancedContent = (product as any)._enhancedContent;
+    const styleStory = enhancedContent?.styleStory || '';
+    const materialInfo = enhancedContent?.materialInfo || '';
+    const mainDescription = enhancedContent?.mainDescription || '';
 
     return `An atmospheric and grainy 35mm analog film photograph with a timeless, avant-garde aesthetic. The scene captures a candid, adventurous moment, rendered in a specific warm and earthy color palette. While the subject's face may be visible, the focus remains on the overall mood and texture, avoiding the feel of a traditional, posed portrait.
 
@@ -491,6 +530,11 @@ Analyze the provided garment image and create a detailed photoshoot concept that
 - **Lens & Camera Effects:** Emulate the characteristics of a vintage prime lens. This includes a shallow depth of field (soft, blurry background or 'bokeh'), subtle vignetting (darker corners), and the possibility of organic lens flare if the scene is backlit.
 - **Composition:** Unconventional and artistic. Use of negative space, low or high angles, and a focus on texture, form, and the interplay of light and shadow. The composition should feel candid and spontaneous, even if a face is in the frame.
 - **Mood:** Nostalgic, timeless, adventurous, and cinematic.
+
+**Product Context:**
+${mainDescription}
+${styleStory ? `Style Story: ${styleStory}` : ''}
+${materialInfo ? `Material: ${materialInfo}` : ''}
 
 **Scene:**
 The model wearing the ${title} in ${color} color is positioned in ${scene.setting}. The scene is illuminated by ${scene.lighting}, creating a ${scene.mood} atmosphere that embodies the ${scene.aesthetic} aesthetic. The styling includes ${scene.styling}. The model ${scene.model_description}. The composition follows ${scene.composition} with authentic props including ${scene.props.join(', ')}. The garment should be the hero of the image while maintaining the aspirational lifestyle context and period authenticity.
@@ -825,6 +869,170 @@ Using the provided reference image, ensure the ${title} maintains its exact colo
         })
         .on('error', reject);
     });
+  }
+
+  /**
+   * Generate images for a single product and return the result
+   */
+  async generateImagesForSingleProduct(product: any): Promise<{
+    success: boolean;
+    imageUrls?: {
+      garmentFull: string;
+      garmentCloseup: string;
+      garmentAngular: string;
+      photoshoot1: string;
+      photoshoot2: string;
+    };
+    error?: string;
+  }> {
+    try {
+      console.log(`🎨 Processing single product: ${product.Title}`);
+
+      // Create organized directory structure using product handle
+      const { originalDir, generatedDir } = this.createProductDirectories(product.Handle);
+
+      // Process the main image URL
+      const imageUrl = product['Image Src'].trim();
+      if (!imageUrl) {
+        return {
+          success: false,
+          error: 'No image URL provided'
+        };
+      }
+
+      const urlHash = this.generateUrlHash(imageUrl);
+
+      // Download original image to organized directory
+      const originalImagePath = await this.downloadImage(
+        imageUrl,
+        originalDir,
+        `original_${urlHash}.webp`
+      );
+
+      // Generate new images in the generated directory
+      const generatedImagePaths = await this.generateImages(product, originalImagePath, generatedDir);
+
+      if (generatedImagePaths.length === 0) {
+        return {
+          success: false,
+          error: 'No images were generated'
+        };
+      }
+
+      // Upload to Cloudinary with descriptive titles
+      const uploadedUrls: string[] = [];
+      const imageTypeNames = [
+        'Full View - White Background',
+        'Close-up Details - White Background', 
+        'Angular/Folded View - White Background',
+        'Styled Photoshoot Scene 1',
+        'Styled Photoshoot Scene 2'
+      ];
+
+      console.log(`📤 Uploading ${generatedImagePaths.length} images to Cloudinary...`);
+
+      for (let i = 0; i < generatedImagePaths.length; i++) {
+        const imageTypeName = imageTypeNames[i] || `Generated ${i + 1}`;
+        console.log(`📤 Processing image ${i + 1}/${generatedImagePaths.length}: ${imageTypeName}`);
+
+        // Upload to Cloudinary
+        const uploadedUrl = await this.uploadToCloudinary(
+          generatedImagePaths[i],
+          `${product.Title} - ${imageTypeName}`,
+          product.Handle
+        );
+
+        if (uploadedUrl && !uploadedUrl.includes('file://')) {
+          uploadedUrls.push(uploadedUrl);
+          console.log(`✅ Upload ${i + 1} successful: ${uploadedUrl}`);
+        } else {
+          // Use local file path as fallback
+          const localPath = `file://${generatedImagePaths[i]}`;
+          uploadedUrls.push(localPath);
+          console.log(`📁 Using local path for image ${i + 1}: ${path.basename(generatedImagePaths[i])}`);
+        }
+      }
+
+      const successfulUploads = uploadedUrls.filter(url => !url.includes('file://')).length;
+      console.log(`📊 Upload summary: ${successfulUploads}/${generatedImagePaths.length} uploaded to Cloudinary, ${generatedImagePaths.length - successfulUploads} stored locally`);
+
+      if (uploadedUrls.length > 0) {
+        // Read the generated scenes for metadata
+        let photoshootScenes: PhotoshootScene[] = [];
+        const scenesPath = path.join(generatedDir, 'photoshoot_scenes.json');
+        if (fs.existsSync(scenesPath)) {
+          photoshootScenes = JSON.parse(fs.readFileSync(scenesPath, 'utf8'));
+        }
+
+        // Save metadata
+        const generatedImages: GeneratedImage = {
+          originalUrl: product['Image Src'],
+          generatedImages: uploadedUrls,
+          metadata: {
+            title: product.Title,
+            handle: product.Handle,
+            generatedCount: uploadedUrls.length,
+            photoshootScenes: photoshootScenes,
+            imageTypes: [
+              {
+                type: 'garment_full_view',
+                url: uploadedUrls[0] || null,
+                description: 'Full garment view on white background'
+              },
+              {
+                type: 'garment_closeup',
+                url: uploadedUrls[1] || null,
+                description: 'Close-up details on white background'
+              },
+              {
+                type: 'garment_angular',
+                url: uploadedUrls[2] || null,
+                description: 'Angular/folded view on white background'
+              },
+              {
+                type: 'styled_photoshoot_1',
+                url: uploadedUrls[3] || null,
+                description: `Professional styled photoshoot - ${photoshootScenes[0]?.aesthetic || 'Scene 1'}`,
+                scene: photoshootScenes[0] || null
+              },
+              {
+                type: 'styled_photoshoot_2',
+                url: uploadedUrls[4] || null,
+                description: `Professional styled photoshoot variation - ${photoshootScenes[0]?.aesthetic || 'Scene 2'}`,
+                scene: photoshootScenes[0] || null
+              }
+            ]
+          }
+        };
+
+        await this.saveMetadata(product, generatedImages, path.join(this.tempDir, product.Handle));
+
+        console.log(`✅ Generated ${uploadedUrls.length} images for ${product.Title}`);
+
+        return {
+          success: true,
+          imageUrls: {
+            garmentFull: uploadedUrls[0] || '',
+            garmentCloseup: uploadedUrls[1] || '',
+            garmentAngular: uploadedUrls[2] || '',
+            photoshoot1: uploadedUrls[3] || '',
+            photoshoot2: uploadedUrls[4] || ''
+          }
+        };
+      }
+
+      return {
+        success: false,
+        error: 'No images were uploaded successfully'
+      };
+
+    } catch (error) {
+      console.error(`❌ Error generating images for ${product.Title}:`, error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
   }
 
   async processProducts(options: {
